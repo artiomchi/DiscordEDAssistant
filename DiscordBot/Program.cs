@@ -168,6 +168,13 @@ namespace DiscordBot
                         await e.Channel.DeleteMessages(messages);
                 });
 
+            commandService.CreateCommand("where-are-you")
+                .Hide()
+                .Do(async e =>
+                {
+                    await e.Channel.SendMessage("Current location: " + Environment.MachineName);
+                });
+
             _client.UserJoined += (s, e) =>
             {
                 if (_welcomeMessage == null) return;
