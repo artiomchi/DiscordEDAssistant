@@ -1,5 +1,4 @@
-﻿using Discord;
-using System;
+﻿using System;
 using System.Configuration;
 using System.Net;
 using System.Threading;
@@ -11,31 +10,29 @@ namespace DiscordBot
     {
         static void Main(string[] args) => new Program().Start();
 
-        private DiscordClient _client;
-        private String _welcomeMessage = null;
-
         public void Start()
         {
-            var heartBeatUrl = ConfigurationManager.AppSettings["System.HearbeatUrl"];
+            var heartBeatUrl = ConfigurationManager.AppSettings["System.Heartbeat.Url"];
             if (heartBeatUrl != null)
-                Task.Factory.StartNew(MaintainHeartbeat, heartBeatUrl);
+                Task.Factory.StartNew(() => MaintainHeartbeat(
+                    heartBeatUrl,
+                    ConfigurationManager.AppSettings["System.Heartbeat.Login"],
+                    ConfigurationManager.AppSettings["System.Heartbeat.Password"]));
 
             var botToken = ConfigurationManager.AppSettings["Discord.Bot.Token"];
             var bot = new Bot();
             bot.Start(botToken); // this will never finish
+            Console.ReadLine();
         }
 
-        public void MaintainHeartbeat(Object state)
+        public void MaintainHeartbeat(String url, String login, String password)
         {
-            var url = state as String;
-            if (url == null)
-                return;
-
             while (true)
             {
                 using (var client = new WebClient())
                 {
-                    client.DownloadString(url);
+                    client.Credentials = new NetworkCredential(login, password);
+                    var result = client.DownloadString(url);
                 }
 
                 Thread.Sleep(Convert.ToInt32(TimeSpan.FromMinutes(5).TotalMilliseconds));

@@ -11,15 +11,15 @@ namespace DiscordBot
     public class Bot
     {
         private DiscordClient _client;
-        private String _welcomeMessage = null;
+        private String _welcomeMessage = "Welcome user! Please read the intro details in #welcome";
         private DateTime _start = DateTime.MinValue;
 
         public Bot()
         {
             _client = new DiscordClient(x =>
             {
-                x.AppName = "E:D Bot";
-                x.AppVersion = "1.2.3-beta";
+                x.AppName = "E:D Assistant Bot";
+                x.AppVersion = "0.7.0-alpha";
             });
 
             _client.MessageReceived += async (s, e) =>
@@ -147,28 +147,30 @@ namespace DiscordBot
         private Task Command_Greet(CommandEventArgs e)
             => e.Channel.SendMessage($"Hello {e.GetArg("GreetedPerson")}!");
 
+        private String ProcessMessageChannelLinks(Server server, String message)
+        {
+            var channelMentions = Regex.Matches(message, @"#(\w+)\b");
+            foreach (var match in channelMentions.OfType<Match>().Select(m => m.Groups[1].Value).Distinct())
+            {
+                var channel = server.FindChannels(match).FirstOrDefault();
+                if (channel != null)
+                    message = Regex.Replace(message, $@"#{match}\b", channel.Mention);
+            }
+            return message;
+        }
+
         private async Task Command_Welcome(CommandEventArgs e)
         {
             if (_welcomeMessage == null)
                 await e.Channel.SendMessage("No welcome message set");
             else
-                await e.Channel.SendMessage($"Welcome message: {_welcomeMessage}");
+                await e.Channel.SendMessage($"Welcome message: {ProcessMessageChannelLinks(e.Server, _welcomeMessage)}");
         }
 
         private async Task Command_Welcome_Set(CommandEventArgs e)
         {
-            var message = e.GetArg("Message");
-            var channelMentions = Regex.Matches(message, @"#(\w+)\b");
-            foreach (var match in channelMentions.OfType<Match>().Select(m => m.Groups[1].Value).Distinct())
-            {
-                var channel = e.Server.FindChannels(match).FirstOrDefault();
-                if (channel != null)
-                    message = Regex.Replace(message, $@"#{match}\b", channel.Mention);
-
-            }
-
-            _welcomeMessage = message;
-            await e.Channel.SendMessage("New greeting: " + message);
+            _welcomeMessage = e.GetArg("Message");
+            await e.Channel.SendMessage("New greeting: " + ProcessMessageChannelLinks(e.Server, _welcomeMessage));
         }
 
         private async Task Command_Clear_Channel_History(CommandEventArgs e)
