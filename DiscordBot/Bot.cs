@@ -2,6 +2,7 @@
 using Discord.Commands;
 using System;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -13,13 +14,14 @@ namespace DiscordBot
         private DiscordClient _client;
         private String _welcomeMessage = "Welcome user! Please read the intro details in #welcome";
         private DateTime _start = DateTime.MinValue;
+        private const String VersionSuffix = "-alpha";
 
         public Bot()
         {
             _client = new DiscordClient(x =>
             {
                 x.AppName = "E:D Assistant Bot";
-                x.AppVersion = "0.7.0-alpha";
+                x.AppVersion = GetVersion() + VersionSuffix;
             });
 
             _client.MessageReceived += async (s, e) =>
@@ -66,12 +68,9 @@ namespace DiscordBot
                 .AddCheck(Check_IsAdmin)
                 .Do(Command_Clear_Channel_History);
 
-            commandService.CreateCommand("where-are-you")
-                .Hide()
-                .Do(Command_WhereAreYou);
-
-            commandService.CreateCommand("uptime")
-                .Do(Command_Uptime);
+            commandService.CreateCommand("status")
+                .Description("Display server status")
+                .Do(Command_Status);
 
             _client.UserJoined += (s, e) =>
             {
@@ -118,7 +117,7 @@ namespace DiscordBot
                     Description = command.Description,
                 };
             });
-            var maxLength = Math.Max(15, commandsHelp.Max(c => c.Name.Length + c.Arguments.Length) + 3);
+            var maxLength = Math.Max(10, commandsHelp.Max(c => c.Name.Length + c.Arguments.Length) + 2);
 
             var message = new StringBuilder();
             message.AppendLine("Available commands:");
@@ -187,10 +186,20 @@ namespace DiscordBot
                 await e.Channel.DeleteMessages(messages);
         }
 
-        private Task Command_WhereAreYou(CommandEventArgs e)
-            => e.Channel.SendMessage("Current location: " + Environment.MachineName);
+        private Version GetVersion()
+            => Assembly.GetAssembly(typeof(Bot)).GetName().Version;
 
-        private Task Command_Uptime(CommandEventArgs e)
-            => e.Channel.SendMessage("Uptime: " + DateTime.UtcNow.Subtract(_start).ToString());
+        private DateTime GetVersionBuildDate(Version version)
+            => new DateTime(2000, 1, 1).AddDays(version.Build).AddSeconds(version.Revision * 2);
+
+        private Task Command_Status(CommandEventArgs e)
+            => e.Channel.SendMessage(
+$@"```
+Status:             OK
+Current location:   {Environment.MachineName}
+Uptime:             {DateTime.UtcNow.Subtract(_start).ToString()}
+Build:              {GetVersion()}{VersionSuffix}
+Build time:         {GetVersionBuildDate(GetVersion())}
+```");
     }
 }
