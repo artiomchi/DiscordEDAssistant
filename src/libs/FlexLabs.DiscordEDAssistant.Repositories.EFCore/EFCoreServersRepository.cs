@@ -18,6 +18,7 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore
                 {
                     ID = ConvertID(s.ID),
                     CommandPrefix = s.CommandPrefix,
+                    WelcomeMessage = s.WelcomeMessage,
                 })
                 .FirstOrDefault();
         }
@@ -31,10 +32,12 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore
             var server = new Models.Server
             {
                 CommandPrefix = dbServer.CommandPrefix,
+                WelcomeMessage = dbServer.WelcomeMessage,
             };
             updater(server);
 
             dbServer.CommandPrefix = server.CommandPrefix;
+            dbServer.WelcomeMessage = server.WelcomeMessage;
             DataContext.SaveChanges();
         }
     }

@@ -7,7 +7,9 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
         public long ID { get; set; }
-        [Required, StringLength(5)]
+        [StringLength(5)]
         public string CommandPrefix { get; set; }
+        [MaxLength]
+        public string WelcomeMessage { get; set; }
     }
 }

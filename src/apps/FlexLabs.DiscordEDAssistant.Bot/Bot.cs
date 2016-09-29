@@ -13,9 +13,8 @@ namespace FlexLabs.DiscordEDAssistant.Bot
     public class Bot
     {
         private IServiceProvider _serviceProvider;
-        private String _clientID;
+        private string _clientID;
         private DiscordClient _client;
-        private String _welcomeMessage = "Welcome {user}! Please read the intro details in #welcome";
         private DateTime _start = DateTime.MinValue;
         private Dictionary<ulong, string> _serverPrefixes = new Dictionary<ulong, string>();
 
@@ -28,23 +27,16 @@ namespace FlexLabs.DiscordEDAssistant.Bot
                 x.AppVersion = Program.GetVersion();
             });
 
-            _client.MessageReceived += async (s, e) =>
-            {
-                if (e.Message.IsAuthor || !e.Channel.IsPrivate) return;
-                await e.Channel.SendMessage(e.Message.Text);
-            };
-
             _client.UsingCommands(x =>
             {
                 x.HelpMode = HelpMode.Disabled;
                 x.CustomPrefixHandler = m =>
                 {
-                    if (m.Channel.IsPrivate)
-                        return 0;
+                    if (m.Channel.IsPrivate || m.Server == null) return 0;
 
                     var prefix = GetServerPrefix(m.Server.Id);
                     if (prefix == null || !m.Text.StartsWith(prefix))
-                        return 0;
+                        return -1;
 
                     return prefix.Length;
                 };
@@ -53,48 +45,63 @@ namespace FlexLabs.DiscordEDAssistant.Bot
             var commandService = _client.GetService<CommandService>();
             commandService.CreateCommand("help")
                 .Hide()
-                .Parameter("Public", ParameterType.Optional)
+                .Parameter("public", ParameterType.Optional)
                 .Do(Command_Help);
 
             commandService.CreateCommand("setprefix")
                 .Description("Set a prefix for commands")
-                .Parameter("Prefix", ParameterType.Required)
-                .AddCheck(Check_IsAdmin)
+                .Parameter("prefix", ParameterType.Optional)
+                .AddCheck(Check_PublicChannel)
+                .AddCheck(Check_IsServerAdmin)
                 .Do(Command_SetPrefix);
 
             commandService.CreateCommand("welcome")
-                .Description("Set welcome message")
-                .AddCheck((cmd, u, ch) => !ch.IsPrivate)
-                .AddCheck(Check_IsAdmin)
+                .Description("Display the current welcome message")
+                .AddCheck(Check_PublicChannel)
+                .AddCheck(Check_IsServerAdmin)
                 .Do(Command_Welcome);
 
             commandService.CreateCommand("welcome")
-                .Description("Set welcome message")
-                .Parameter("Message", ParameterType.Required)
-                .AddCheck((cmd, u, ch) => !ch.IsPrivate)
-                .AddCheck(Check_IsAdmin)
+                .Description("Set a welcome message for new users")
+                .Parameter("message", ParameterType.Unparsed)
+                .AddCheck(Check_PublicChannel)
+                .AddCheck(Check_IsServerAdmin)
                 .Do(Command_Welcome_Set);
+
+            commandService.CreateGroup("time", x =>
+            {
+                x.CreateCommand("")
+                    .Description("Display the in-game time (UTC)")
+                    .Do(Command_Time);
+
+                x.CreateCommand("in")
+                    .Description("Convert in-game time to local time")
+                    .Parameter("timezone", ParameterType.Required)
+                    .Parameter("time", ParameterType.Optional)
+                    .Do(Command_TimeIn);
+            });
+
+            commandService.CreateCommand("about")
+                .Alias("uptime", "status")
+                .Description("Display server information")
+                .Do(Command_Status);
 
             commandService.CreateCommand("clear-channel-history")
                 .Hide()
-                .Parameter("Password", ParameterType.Required)
-                .AddCheck((cmd, u, ch) => !ch.IsPrivate)
-                .AddCheck(Check_IsAdmin)
+                .Parameter("password", ParameterType.Required)
+                .AddCheck(Check_PublicChannel)
+                .AddCheck(Check_IsServerAdmin)
                 .Do(Command_Clear_Channel_History);
-
-            commandService.CreateCommand("status")
-                .Alias("uptime", "about")
-                .Description("Display server status")
-                .Do(Command_Status);
 
             _client.UserJoined += (s, e) =>
             {
-                if (_welcomeMessage == null) return;
-                e.Server.DefaultChannel.SendMessage(ProcessMessageChannelLinks(e.Server, e.User, _welcomeMessage));
+                var welcomeMessage = GetServerWelcomeMessage(e.Server.Id);
+                if (welcomeMessage == null) return;
+                e.Server.DefaultChannel.SendMessage(ProcessMessageChannelLinks(e.Server, e.User, welcomeMessage));
             };
         }
 
-        public void Start(String botToken, String clientID)
+        public void Start(string botToken, string clientID)
         {
             _clientID = clientID;
             _start = DateTime.UtcNow;
@@ -104,7 +111,7 @@ namespace FlexLabs.DiscordEDAssistant.Bot
             });
         }
 
-        private String GetServerPrefix(UInt64 serverID)
+        private string GetServerPrefix(ulong serverID)
         {
             if (_serverPrefixes.ContainsKey(serverID))
                 return _serverPrefixes[serverID];
@@ -121,28 +128,42 @@ namespace FlexLabs.DiscordEDAssistant.Bot
             }
         }
 
-        private Boolean Check_IsAdmin(Command cmd, User u, Channel ch)
+        private string GetServerWelcomeMessage(ulong serverID)
         {
-            var role = ch.Server.FindRoles("Admin", true).FirstOrDefault();
-            if (role == null)
-                role = ch.Server.FindRoles("Mod", true).FirstOrDefault();
-            if (role == null)
-                role = ch.Server.FindRoles("Neo", true).FirstOrDefault();
-            if (role == null)
-                return false;
-
-            return u.HasRole(role);
+            using (var serversService = _serviceProvider.GetService(typeof(ServersService)) as ServersService)
+            {
+                var server = serversService.Load(serverID);
+                return server?.WelcomeMessage;
+            }
         }
+
+        private bool Check_PublicChannel(Command cmd, User u, Channel ch) => !ch.IsPrivate;
+        private bool Check_IsServerAdmin(Command cmd, User u, Channel ch) => !ch.IsPrivate && u.ServerPermissions.Administrator;
 
         private async Task Command_Help(CommandEventArgs e)
         {
             var commandService = _client.GetService<CommandService>();
-            var commands = commandService.AllCommands.OfType<Command>().Where(c => !c.IsHidden);
+            var commands = commandService.AllCommands.OfType<Command>()
+                .Where(c => !c.IsHidden)
+                .Where(c =>
+                {
+                    var method = typeof(Command).GetMethod("CanRun", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                    if (method != null)
+                    {
+                        try
+                        {
+                            var canRun = (bool)method.Invoke(c, new object[] { e.User, e.Channel, null });
+                            return canRun;
+                        }
+                        catch { }
+                    }
+                    return true;
+                });
             var commandsHelp = commands.Select(command =>
             {
                 var arguments = command.Parameters.Any()
-                    ? " " + String.Join(" ", command.Parameters.Select(a => $"{{{a.Name}}}"))
-                    : String.Empty;
+                    ? " " + string.Join(" ", command.Parameters.Select(a => $"{{{a.Name}}}"))
+                    : string.Empty;
                 return new
                 {
                     Arguments = arguments,
@@ -152,19 +173,19 @@ namespace FlexLabs.DiscordEDAssistant.Bot
             });
             var maxLength = Math.Max(10, commandsHelp.Max(c => c.Name.Length + c.Arguments.Length) + 1);
 
-            var prefix = GetServerPrefix(e.Server.Id);
+            var prefix = e.Server != null ? GetServerPrefix(e.Server.Id) : null;
             var message = new StringBuilder();
-            message.AppendLine("Available commands:");
+            message.AppendLine($"Available commands for {e.Server?.Name ?? "direct messages"}:");
             message.AppendLine("```http");
             foreach (var command in commandsHelp)
             {
                 var padding = maxLength - command.Name.Length - command.Arguments.Length;
-                message.AppendLine($"{prefix}{command.Name}{command.Arguments}{new String(' ', padding)}: {command.Description}");
+                message.AppendLine($"{prefix}{command.Name}{command.Arguments}{new string(' ', padding)}: {command.Description}");
             }
             message.AppendLine("```");
 
             var pub = e.Args.Length > 0
-                ? String.Equals(e.GetArg("Public"), "here", StringComparison.OrdinalIgnoreCase)
+                ? string.Equals(e.GetArg("public"), "here", StringComparison.OrdinalIgnoreCase)
                 : false;
             if (e.Channel.IsPrivate || pub)
             {
@@ -179,16 +200,25 @@ namespace FlexLabs.DiscordEDAssistant.Bot
 
         private async Task Command_SetPrefix(CommandEventArgs e)
         {
-            var prefix = e.GetArg("Prefix");
+            var prefix = e.GetArg("prefix");
+            if (string.IsNullOrWhiteSpace(prefix)) prefix = null;
+            if (prefix?.Length > 5)
+            {
+                await e.Channel.SendMessage("Command prefix is too long");
+            }
 
             using (var serversService = _serviceProvider.GetService(typeof(ServersService)) as ServersService)
             {
                 serversService.SetCommandPrefix(e.Server.Id, prefix);
             }
-            await e.Channel.SendMessage("Prefix updated");
+
+            if (prefix != null)
+                await e.Channel.SendMessage($"Command prefix set to `{prefix}`");
+            else
+                await e.Channel.SendMessage("Command prefix removed. You can @mention the bot to send commands");
         }
 
-        private String ProcessMessageChannelLinks(Server server, User user, String message)
+        private string ProcessMessageChannelLinks(Server server, User user, string message)
         {
             var channelMentions = Regex.Matches(message, @"#(\w+)\b");
             foreach (var match in channelMentions.OfType<Match>().Select(m => m.Groups[1].Value).Distinct())
@@ -197,26 +227,41 @@ namespace FlexLabs.DiscordEDAssistant.Bot
                 if (channel != null)
                     message = Regex.Replace(message, $@"#{match}\b", channel.Mention);
             }
-            return message.Replace("{user}", user.Mention);
+            message = message.IndexOf("{user}") >= 0
+                ? message.Replace("{user}", user.Mention)
+                : user.Mention + " " + message;
+            return message;
         }
 
         private async Task Command_Welcome(CommandEventArgs e)
         {
-            if (_welcomeMessage == null)
+            var welcomeMessage = GetServerWelcomeMessage(e.Server.Id);
+            if (welcomeMessage == null)
                 await e.Channel.SendMessage("No welcome message set");
             else
-                await e.Channel.SendMessage($"Welcome message: {ProcessMessageChannelLinks(e.Server, e.User, _welcomeMessage)}");
+                await e.Channel.SendMessage($@"Welcome message:
+{ProcessMessageChannelLinks(e.Server, e.User, welcomeMessage)}");
         }
 
         private async Task Command_Welcome_Set(CommandEventArgs e)
         {
-            _welcomeMessage = e.GetArg("Message");
-            await e.Channel.SendMessage("New greeting: " + ProcessMessageChannelLinks(e.Server, e.User, _welcomeMessage));
+            var welcomeMessage = e.GetArg("message");
+            if (string.IsNullOrWhiteSpace(welcomeMessage) || welcomeMessage == "''" || welcomeMessage == "\"\"" || welcomeMessage == "clear") welcomeMessage = null;
+
+            using (var serversService = _serviceProvider.GetService(typeof(ServersService)) as ServersService)
+            {
+                serversService.SetWelcomeMessage(e.Server.Id, welcomeMessage);
+            }
+
+            if (welcomeMessage != null)
+                await e.Channel.SendMessage("New greeting: " + ProcessMessageChannelLinks(e.Server, e.User, welcomeMessage));
+            else
+                await e.Channel.SendMessage("Greeting message removed");
         }
 
         private async Task Command_Clear_Channel_History(CommandEventArgs e)
         {
-            var pass = e.GetArg("Password");
+            var pass = e.GetArg("password");
             if (pass != "passw0rd!")
             {
                 await e.Channel.SendMessage("Password invalid!");
@@ -228,15 +273,81 @@ namespace FlexLabs.DiscordEDAssistant.Bot
                 await e.Channel.DeleteMessages(messages);
         }
 
+        private Task Command_Time(CommandEventArgs e)
+            => e.Channel.SendMessage($"Current in-game time: `{DateTime.UtcNow.ToLongTimeString()}` (UTC)");
+
+        private async Task Command_TimeIn(CommandEventArgs e)
+        {
+            var timeZoneName = e.GetArg("timezone");
+            var timeZone = GetTimeZone(timeZoneName);
+            if (timeZone == null)
+            {
+                await e.Channel.SendMessage("Could not understand the time zone name");
+                return;
+            }
+
+            DateTime time;
+            var customTime = false;
+            if (!string.IsNullOrWhiteSpace(e.GetArg("time")))
+            {
+                customTime = true;
+                if (!DateTime.TryParse(e.GetArg("time"), out time))
+                {
+                    await e.Channel.SendMessage("Could not understand the time");
+                    return;
+                }
+            }
+            else
+            {
+                time = DateTime.UtcNow;
+            }
+
+            var newTime = TimeZoneInfo.ConvertTimeFromUtc(time, timeZone);
+            if (customTime)
+                await e.Channel.SendMessage($"The time in `{timeZoneName}` at `{time.ToLongTimeString()}` UTC will be `{newTime.ToLongTimeString()}`");
+            else
+                await e.Channel.SendMessage($"The time in `{timeZoneName}` is `{newTime.ToLongTimeString()}`");
+        }
+
+        private TimeZoneInfo GetTimeZone(String timeZoneName)
+        {
+            switch (timeZoneName.ToLowerInvariant())
+            {
+                case "pdt":
+                case "pst": return TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
+                case "cdt":
+                case "cst": return TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time");
+                case "edt":
+                case "est": return TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
+                case "bst":
+                case "gmt": return TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time");
+                case "utc": return TimeZoneInfo.FindSystemTimeZoneById("UTC");
+                case "cet": return TimeZoneInfo.FindSystemTimeZoneById("Central Europe Standard Time");
+                case "eet": return TimeZoneInfo.FindSystemTimeZoneById("E. Europe Standard Time");
+                case "ch": return TimeZoneInfo.FindSystemTimeZoneById("China Standard Time");
+                case "aus": return TimeZoneInfo.FindSystemTimeZoneById("AUS Central Standard Time");
+                case "eaus": return TimeZoneInfo.FindSystemTimeZoneById("AUS Eastern Standard Time");
+                default:
+                    try
+                    {
+                        return TimeZoneInfo.FindSystemTimeZoneById(timeZoneName);
+                    }
+                    catch
+                    {
+                        return null;
+                    }
+            }
+        }
+
         private async Task Command_Status(CommandEventArgs e)
         {
             var message = 
-$@"```
-Status:             OK
-Current location:   {Environment.MachineName}
-Uptime:             {DateTime.UtcNow.Subtract(_start).ToString()}
-Build:              {Program.GetVersion()}
-Build time:         {Program.GetBuildTime()}
+$@"```http
+Status           : OK
+Current location : {Environment.MachineName}
+Uptime           : {DateTime.UtcNow.Subtract(_start).ToString()}
+Build            : {Program.GetVersion()}
+Build time       : {Program.GetBuildTime()}
 ```";
             if (_clientID != null)
                 message+= $@"
