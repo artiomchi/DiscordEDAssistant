@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace FlexLabs.DiscordEDAssistant.Repositories.EFCompact.Base
+namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
 {
     public class EDAssistantDataContext : DbContext
     {
@@ -13,13 +13,13 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCompact.Base
         public static void Configure(IServiceCollection services, ServiceLifetime lifetime, string connectionString)
         {
             services.AddDbContext<EDAssistantDataContext>(options =>
-                options.UseSqlCe(connectionString), lifetime);
+                options.UseSqlServer(connectionString), lifetime);
         }
 
         public static void Init(string connectionString)
         {
             var optionsBuilder = new DbContextOptionsBuilder();
-            optionsBuilder.UseSqlCe(connectionString);
+            optionsBuilder.UseSqlServer(connectionString);
 
             using (var context = new EDAssistantDataContext(optionsBuilder.Options))
             {

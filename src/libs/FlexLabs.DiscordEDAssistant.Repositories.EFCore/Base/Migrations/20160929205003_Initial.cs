@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace FlexLabs.DiscordEDAssistant.Repositories.EFCompact.Base.Migrations
+namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base.Migrations
 {
     public partial class Initial : Migration
     {
@@ -12,10 +12,8 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCompact.Base.Migrations
                 name: "Servers",
                 columns: table => new
                 {
-                    ID = table.Column<long>(nullable: false)
-                        .Annotation("SqlCe:ValueGeneration", "True"),
-                    CommandPrefix = table.Column<string>(nullable: true),
-                    ServerID = table.Column<long>(nullable: false)
+                    ID = table.Column<long>(nullable: false),
+                    CommandPrefix = table.Column<string>(maxLength: 5, nullable: false)
                 },
                 constraints: table =>
                 {

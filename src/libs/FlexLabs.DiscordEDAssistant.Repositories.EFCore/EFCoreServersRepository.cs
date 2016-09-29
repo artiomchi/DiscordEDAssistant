@@ -1,22 +1,22 @@
-﻿using FlexLabs.DiscordEDAssistant.Repositories.EFCompact.Base;
+﻿using FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base;
 using System;
 using System.Linq;
 
-namespace FlexLabs.DiscordEDAssistant.Repositories.EFCompact
+namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore
 {
-    public class EFCompactServersRepository : RepositoryBase, IServersRepository
+    public class EFCoreServersRepository : RepositoryBase, IServersRepository
     {
-        public EFCompactServersRepository(EDAssistantDataContext context)
+        public EFCoreServersRepository(EDAssistantDataContext context)
             : base(context)
         { }
 
         public Models.Server Load(ulong serverID)
         {
             return DataContext.Servers
-                .Where(s => s.ServerID == ConvertID(serverID))
+                .Where(s => s.ID == ConvertID(serverID))
                 .Select(s => new Models.Server
                 {
-                    ID = ConvertID(s.ServerID),
+                    ID = ConvertID(s.ID),
                     CommandPrefix = s.CommandPrefix,
                 })
                 .FirstOrDefault();
@@ -24,9 +24,9 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCompact
 
         public void Update(ulong serverID, Action<Models.Server> updater)
         {
-            var dbServer = DataContext.Servers.SingleOrDefault(s => s.ServerID == ConvertID(serverID));
+            var dbServer = DataContext.Servers.SingleOrDefault(s => s.ID == ConvertID(serverID));
             if (dbServer == null)
-                DataContext.Servers.Add(dbServer = new Server { ServerID = ConvertID(serverID) });
+                DataContext.Servers.Add(dbServer = new Server { ID = ConvertID(serverID) });
 
             var server = new Models.Server
             {

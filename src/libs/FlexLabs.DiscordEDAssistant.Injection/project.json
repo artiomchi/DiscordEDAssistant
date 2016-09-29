@@ -2,9 +2,9 @@
   "version": "0.7.0-alpha-*",
 
   "dependencies": {
-    "FlexLabs.DiscordEDAssistant.Repositories.EFCompact": "0.7.0-*",
+    "FlexLabs.DiscordEDAssistant.Repositories.EFCore": "0.7.0-*",
     "FlexLabs.DiscordEDAssistant.Services": "0.7.0-*",
-    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.0-alpha1-22167",
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
     "NETStandard.Library": "1.6.0"
   },
 

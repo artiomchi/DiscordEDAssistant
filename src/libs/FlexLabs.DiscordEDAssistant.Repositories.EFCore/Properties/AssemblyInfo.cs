@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 // associated with an assembly.
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("FlexLabs.DiscordEDAssistant.Repositories.EFCompact")]
+[assembly: AssemblyProduct("FlexLabs.DiscordEDAssistant.Repositories.EFCore")]
 [assembly: AssemblyTrademark("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible
