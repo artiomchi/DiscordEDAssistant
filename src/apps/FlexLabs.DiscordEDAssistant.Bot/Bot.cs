@@ -274,7 +274,7 @@ namespace FlexLabs.DiscordEDAssistant.Bot
         }
 
         private Task Command_Time(CommandEventArgs e)
-            => e.Channel.SendMessage($"Current in-game time: `{DateTime.UtcNow.ToLongTimeString()}` (UTC)");
+            => e.Channel.SendMessage($"Current in-game time: `{FormatTime(DateTime.UtcNow)}` (UTC)");
 
         private async Task Command_TimeIn(CommandEventArgs e)
         {
@@ -304,10 +304,12 @@ namespace FlexLabs.DiscordEDAssistant.Bot
 
             var newTime = TimeZoneInfo.ConvertTimeFromUtc(time, timeZone);
             if (customTime)
-                await e.Channel.SendMessage($"The time in `{timeZoneName}` at `{time.ToLongTimeString()}` UTC will be `{newTime.ToLongTimeString()}`");
+                await e.Channel.SendMessage($"The time in `{timeZoneName}` at `{FormatTime(time)}` UTC will be `{FormatTime(newTime)}`");
             else
-                await e.Channel.SendMessage($"The time in `{timeZoneName}` is `{newTime.ToLongTimeString()}`");
+                await e.Channel.SendMessage($"The time in `{timeZoneName}` is `{FormatTime(newTime)}`");
         }
+
+        private String FormatTime(DateTime time) => time.ToString("HH:mm:ss");
 
         private TimeZoneInfo GetTimeZone(String timeZoneName)
         {
