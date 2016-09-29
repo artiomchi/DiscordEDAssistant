@@ -2,6 +2,8 @@
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
+using FlexLabs.DiscordEDAssistant.Injection;
 
 namespace FlexLabs.DiscordEDAssistant.Bot
 {
@@ -40,8 +42,17 @@ namespace FlexLabs.DiscordEDAssistant.Bot
                 return;
             }
 
-            var bot = new Bot();
-            bot.Start(botToken);
+            var dbConnectionString = config.GetConnectionString("DefaultConnection");
+
+            var services = new ServiceCollection();
+            ServiceMappings.ConfigureDatabase(services, dbConnectionString);
+            ServiceMappings.ConfigureServices(services);
+            var serviceProvider = services.BuildServiceProvider();
+
+            ServiceMappings.InitDatabase(dbConnectionString);
+
+            var bot = new Bot(serviceProvider);
+            bot.Start(botToken, config["Discord.Bot.ClientID"]);
         }
     }
 }
