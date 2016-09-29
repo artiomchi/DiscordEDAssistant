@@ -14,9 +14,9 @@
     "Discord.Net": "0.9.5",
     "Discord.Net.Commands": "0.9.5",
     "FlexLabs.DiscordEDAssistant.Base": "0.7.0-*",
-    "FlexLabs.DiscordEDAssistant.Injection": "1.0.0-*",
-    "FlexLabs.DiscordEDAssistant.Models": "1.0.0-*",
-    "FlexLabs.DiscordEDAssistant.Services": "1.0.0-*",
+    "FlexLabs.DiscordEDAssistant.Injection": "0.7.0-*",
+    "FlexLabs.DiscordEDAssistant.Models": "0.7.0-*",
+    "FlexLabs.DiscordEDAssistant.Services": "0.7.0-*",
     "Microsoft.EntityFrameworkCore.Design": {
       "version": "1.0.0-preview2-final",
       "type": "build"
