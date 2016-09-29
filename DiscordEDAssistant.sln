@@ -3,7 +3,20 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscordBot", "DiscordBot\DiscordBot.csproj", "{D1138681-D26F-4E47-832A-66CE45791C27}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{C74DF4A9-C1BF-48DA-965A-60D0A1E1A906}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B0C27C04-83AD-44A7-89E7-8F525655CA24}"
+	ProjectSection(SolutionItems) = preProject
+		global.json = global.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "apps", "apps", "{34DFE182-F532-4A02-BBEE-564874BB2A76}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "libs", "libs", "{7E5CBF39-EDAD-469D-B827-068DA6A90A7D}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "FlexLabs.DiscordEDAssistant.Base", "src\libs\FlexLabs.DiscordEDAssistant.Base\FlexLabs.DiscordEDAssistant.Base.xproj", "{F7A2D18A-A133-467B-BAF0-92A5EFF3E734}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "FlexLabs.DiscordEDAssistant.Bot", "src\apps\FlexLabs.DiscordEDAssistant.Bot\FlexLabs.DiscordEDAssistant.Bot.xproj", "{BC4B36B2-62F0-4361-A85D-B6D5EF61DD62}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,12 +24,22 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D1138681-D26F-4E47-832A-66CE45791C27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D1138681-D26F-4E47-832A-66CE45791C27}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D1138681-D26F-4E47-832A-66CE45791C27}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D1138681-D26F-4E47-832A-66CE45791C27}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7A2D18A-A133-467B-BAF0-92A5EFF3E734}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7A2D18A-A133-467B-BAF0-92A5EFF3E734}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7A2D18A-A133-467B-BAF0-92A5EFF3E734}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7A2D18A-A133-467B-BAF0-92A5EFF3E734}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC4B36B2-62F0-4361-A85D-B6D5EF61DD62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC4B36B2-62F0-4361-A85D-B6D5EF61DD62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC4B36B2-62F0-4361-A85D-B6D5EF61DD62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC4B36B2-62F0-4361-A85D-B6D5EF61DD62}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{34DFE182-F532-4A02-BBEE-564874BB2A76} = {C74DF4A9-C1BF-48DA-965A-60D0A1E1A906}
+		{7E5CBF39-EDAD-469D-B827-068DA6A90A7D} = {C74DF4A9-C1BF-48DA-965A-60D0A1E1A906}
+		{F7A2D18A-A133-467B-BAF0-92A5EFF3E734} = {7E5CBF39-EDAD-469D-B827-068DA6A90A7D}
+		{BC4B36B2-62F0-4361-A85D-B6D5EF61DD62} = {34DFE182-F532-4A02-BBEE-564874BB2A76}
 	EndGlobalSection
 EndGlobal

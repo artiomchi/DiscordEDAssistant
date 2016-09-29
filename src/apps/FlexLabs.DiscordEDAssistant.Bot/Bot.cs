@@ -2,26 +2,24 @@
 using Discord.Commands;
 using System;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace DiscordBot
+namespace FlexLabs.DiscordEDAssistant.Bot
 {
     public class Bot
     {
         private DiscordClient _client;
         private String _welcomeMessage = "Welcome user! Please read the intro details in #welcome";
         private DateTime _start = DateTime.MinValue;
-        private const String VersionSuffix = "-alpha";
 
         public Bot()
         {
             _client = new DiscordClient(x =>
             {
                 x.AppName = "E:D Assistant Bot";
-                x.AppVersion = GetVersion() + VersionSuffix;
+                x.AppVersion = Program.GetVersion();
             });
 
             _client.MessageReceived += async (s, e) =>
@@ -78,7 +76,6 @@ namespace DiscordBot
                 e.Server.DefaultChannel.SendMessage($"{e.User.Mention} {_welcomeMessage}");
             };
         }
-
         public void Start(String botToken)
         {
             _start = DateTime.UtcNow;
@@ -186,20 +183,14 @@ namespace DiscordBot
                 await e.Channel.DeleteMessages(messages);
         }
 
-        private Version GetVersion()
-            => Assembly.GetAssembly(typeof(Bot)).GetName().Version;
-
-        private DateTime GetVersionBuildDate(Version version)
-            => new DateTime(2000, 1, 1).AddDays(version.Build).AddSeconds(version.Revision * 2);
-
         private Task Command_Status(CommandEventArgs e)
             => e.Channel.SendMessage(
 $@"```
 Status:             OK
 Current location:   {Environment.MachineName}
 Uptime:             {DateTime.UtcNow.Subtract(_start).ToString()}
-Build:              {GetVersion()}{VersionSuffix}
-Build time:         {GetVersionBuildDate(GetVersion())}
+Build:              {Program.GetVersion()}
+Build time:         {Program.GetBuildTime()}
 ```");
     }
 }
