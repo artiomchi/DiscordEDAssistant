@@ -18,7 +18,7 @@ namespace FlexLabs.DiscordEDAssistant.Bot
         {
             _client = new DiscordClient(x =>
             {
-                x.AppName = "E:D Assistant Bot";
+                x.AppName = "Elite Dangerous Assistant Bot";
                 x.AppVersion = Program.GetVersion();
             });
 
