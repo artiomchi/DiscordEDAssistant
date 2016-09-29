@@ -3,8 +3,8 @@
 
   "dependencies": {
     "EntityFrameworkCore.SqlServerCompact40": "1.1.0-alpha1-2",
-    "FlexLabs.DiscordEDAssistant.Models": "1.0.0-*",
-    "FlexLabs.DiscordEDAssistant.Repositories": "1.0.0-*",
+    "FlexLabs.DiscordEDAssistant.Models": "",
+    "FlexLabs.DiscordEDAssistant.Repositories": "",
     "Microsoft.EntityFrameworkCore": "1.1.0-alpha1-22167",
     "Microsoft.EntityFrameworkCore.Design": {
       "type": "build",
