@@ -11,7 +11,7 @@ namespace FlexLabs.DiscordEDAssistant.Bot
     public class Bot
     {
         private DiscordClient _client;
-        private String _welcomeMessage = "Welcome user! Please read the intro details in #welcome";
+        private String _welcomeMessage = "Welcome {user}! Please read the intro details in #welcome";
         private DateTime _start = DateTime.MinValue;
 
         public Bot()
@@ -73,7 +73,7 @@ namespace FlexLabs.DiscordEDAssistant.Bot
             _client.UserJoined += (s, e) =>
             {
                 if (_welcomeMessage == null) return;
-                e.Server.DefaultChannel.SendMessage($"{e.User.Mention} {_welcomeMessage}");
+                e.Server.DefaultChannel.SendMessage(ProcessMessageChannelLinks(e.Server, e.User, _welcomeMessage));
             };
         }
         public void Start(String botToken)
@@ -143,7 +143,7 @@ namespace FlexLabs.DiscordEDAssistant.Bot
         private Task Command_Greet(CommandEventArgs e)
             => e.Channel.SendMessage($"Hello {e.GetArg("GreetedPerson")}!");
 
-        private String ProcessMessageChannelLinks(Server server, String message)
+        private String ProcessMessageChannelLinks(Server server, User user, String message)
         {
             var channelMentions = Regex.Matches(message, @"#(\w+)\b");
             foreach (var match in channelMentions.OfType<Match>().Select(m => m.Groups[1].Value).Distinct())
@@ -152,7 +152,7 @@ namespace FlexLabs.DiscordEDAssistant.Bot
                 if (channel != null)
                     message = Regex.Replace(message, $@"#{match}\b", channel.Mention);
             }
-            return message;
+            return message.Replace("{user}", user.Mention);
         }
 
         private async Task Command_Welcome(CommandEventArgs e)
@@ -160,13 +160,13 @@ namespace FlexLabs.DiscordEDAssistant.Bot
             if (_welcomeMessage == null)
                 await e.Channel.SendMessage("No welcome message set");
             else
-                await e.Channel.SendMessage($"Welcome message: {ProcessMessageChannelLinks(e.Server, _welcomeMessage)}");
+                await e.Channel.SendMessage($"Welcome message: {ProcessMessageChannelLinks(e.Server, e.User, _welcomeMessage)}");
         }
 
         private async Task Command_Welcome_Set(CommandEventArgs e)
         {
             _welcomeMessage = e.GetArg("Message");
-            await e.Channel.SendMessage("New greeting: " + ProcessMessageChannelLinks(e.Server, _welcomeMessage));
+            await e.Channel.SendMessage("New greeting: " + ProcessMessageChannelLinks(e.Server, e.User, _welcomeMessage));
         }
 
         private async Task Command_Clear_Channel_History(CommandEventArgs e)

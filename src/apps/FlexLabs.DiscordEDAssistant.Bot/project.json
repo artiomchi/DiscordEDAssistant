@@ -1,5 +1,6 @@
 {
   "version": "0.7.0-alpha-*",
+  "userSecretsId": "aspnet-FlexLabs.DiscordEDAssistant-20160929030746",
   "buildOptions": {
     "emitEntryPoint": true
   },
