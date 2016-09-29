@@ -29,7 +29,7 @@ namespace FlexLabs.DiscordEDAssistant.Bot
             var configBuilder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
             if (System.Diagnostics.Debugger.IsAttached)
-                configBuilder.AddUserSecrets();
+                configBuilder.AddUserSecrets("aspnet-FlexLabs.DiscordEDAssistant-20160929030746");
             configBuilder.AddEnvironmentVariables();
             var config = configBuilder.Build();
 

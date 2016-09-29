@@ -18,6 +18,8 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "FlexLabs.DiscordEDAssistant
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "FlexLabs.DiscordEDAssistant.Bot", "src\apps\FlexLabs.DiscordEDAssistant.Bot\FlexLabs.DiscordEDAssistant.Bot.xproj", "{BC4B36B2-62F0-4361-A85D-B6D5EF61DD62}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "FlexLabs.DiscordEDAssistant.Web", "src\apps\FlexLabs.DiscordEDAssistant.Web\FlexLabs.DiscordEDAssistant.Web.xproj", "{18991A55-9B4A-4298-9EBE-BE14E07E350A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +34,10 @@ Global
 		{BC4B36B2-62F0-4361-A85D-B6D5EF61DD62}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BC4B36B2-62F0-4361-A85D-B6D5EF61DD62}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BC4B36B2-62F0-4361-A85D-B6D5EF61DD62}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18991A55-9B4A-4298-9EBE-BE14E07E350A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18991A55-9B4A-4298-9EBE-BE14E07E350A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18991A55-9B4A-4298-9EBE-BE14E07E350A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18991A55-9B4A-4298-9EBE-BE14E07E350A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -41,5 +47,6 @@ Global
 		{7E5CBF39-EDAD-469D-B827-068DA6A90A7D} = {C74DF4A9-C1BF-48DA-965A-60D0A1E1A906}
 		{F7A2D18A-A133-467B-BAF0-92A5EFF3E734} = {7E5CBF39-EDAD-469D-B827-068DA6A90A7D}
 		{BC4B36B2-62F0-4361-A85D-B6D5EF61DD62} = {34DFE182-F532-4A02-BBEE-564874BB2A76}
+		{18991A55-9B4A-4298-9EBE-BE14E07E350A} = {34DFE182-F532-4A02-BBEE-564874BB2A76}
 	EndGlobalSection
 EndGlobal
