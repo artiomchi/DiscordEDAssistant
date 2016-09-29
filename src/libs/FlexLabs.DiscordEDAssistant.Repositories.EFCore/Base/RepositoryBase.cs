@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FlexLabs.DiscordEDAssistant.Repositories.EFCompact.Base
+namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
 {
     public abstract class RepositoryBase : IDisposable
     {

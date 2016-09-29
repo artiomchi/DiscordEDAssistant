@@ -24,7 +24,7 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "FlexLabs.DiscordEDAssistant
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "FlexLabs.DiscordEDAssistant.Repositories", "src\libs\FlexLabs.DiscordEDAssistant.Repositories\FlexLabs.DiscordEDAssistant.Repositories.xproj", "{E191151B-C79F-4EF7-9AF6-628055FA8FBB}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "FlexLabs.DiscordEDAssistant.Repositories.EFCompact", "src\libs\FlexLabs.DiscordEDAssistant.Repositories.EFCompact\FlexLabs.DiscordEDAssistant.Repositories.EFCompact.xproj", "{BA4A420B-F8BF-4176-8363-88D475458C44}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "FlexLabs.DiscordEDAssistant.Repositories.EFCore", "src\libs\FlexLabs.DiscordEDAssistant.Repositories.EFCore\FlexLabs.DiscordEDAssistant.Repositories.EFCore.xproj", "{BA4A420B-F8BF-4176-8363-88D475458C44}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "FlexLabs.DiscordEDAssistant.Services", "src\libs\FlexLabs.DiscordEDAssistant.Services\FlexLabs.DiscordEDAssistant.Services.xproj", "{30A7D3EC-D111-4447-88A0-070071ED406B}"
 EndProject

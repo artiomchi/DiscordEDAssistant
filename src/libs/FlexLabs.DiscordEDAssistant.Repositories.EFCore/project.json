@@ -2,15 +2,15 @@
   "version": "0.7.0-alpha-*",
 
   "dependencies": {
-    "EntityFrameworkCore.SqlServerCompact40": "1.1.0-alpha1-2",
     "FlexLabs.DiscordEDAssistant.Models": "0.7.0-*",
     "FlexLabs.DiscordEDAssistant.Repositories": "0.7.0-*",
-    "Microsoft.EntityFrameworkCore": "1.1.0-alpha1-22167",
+    "Microsoft.EntityFrameworkCore": "1.0.1",
     "Microsoft.EntityFrameworkCore.Design": {
       "type": "build",
       "version": "1.0.0-preview2-final"
     },
-    "Microsoft.EntityFrameworkCore.Relational": "1.1.0-alpha1-22167",
+    "Microsoft.EntityFrameworkCore.Relational": "1.0.1",
+    "Microsoft.EntityFrameworkCore.SqlServer": "1.0.1",
     "Microsoft.EntityFrameworkCore.Tools": {
       "version": "1.0.0-preview2-final",
       "type": "build"
