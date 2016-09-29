@@ -1,0 +1,30 @@
+version: '0.7.{build}'
+configuration:
+- Debug
+- Release
+platform: Any CPU
+before_build:
+- appveyor-retry dotnet restore -v Minimal
+build_script:
+- dotnet build "src\apps\FlexLabs.DiscordEDAssistant.Bot" -c %CONFIGURATION%
+after_build:
+- dotnet publish "src\apps\FlexLabs.DiscordEDAssistant.Bot" -c %CONFIGURATION% -o artifacts\DiscordBot
+- copy "src\apps\FlexLabs.DiscordEDAssistant.Bot\run.bat" "artifacts\DiscordBot\run.bat" /Y
+- 7z a artifacts\DiscordBot.zip %APPVEYOR_BUILD_FOLDER%\artifacts\DiscordBot\*
+#test_script:
+#- dotnet test "src\test\FlexLabs.DiscordEDAssistant.Bot.Tests" -c %CONFIGURATION%
+artifacts:
+- path: DiscordBot.zip
+  name: DiscordBot
+cache:
+- '%USERPROFILE%\.nuget\packages'
+deploy:
+- provider: AzureWebJob
+  website: discord-ed-assistant
+  username: $discord-ed-assistant
+  password:
+    secure: GEv+9+zbChyrsuRqPfq+Wdlo/1MLI0XUkzRogD0dGbmJ13r+uKXcuWyMGjDbrLLXIx2Je7qLsknA0FaXpRMvig==
+  artifact: DiscordBot
+  job_name: DiscordBot
+  on:
+    branch: master
