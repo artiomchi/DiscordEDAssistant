@@ -33,7 +33,7 @@ namespace FlexLabs.DiscordEDAssistant.Bot
             configBuilder.AddEnvironmentVariables();
             var config = configBuilder.Build();
 
-            var botToken = config["Discord.Bot.Token"];
+            var botToken = config.GetConnectionString("Discord.Bot.Token");
             if (botToken == null)
             {
                 Console.WriteLine("Bot auth token missing!");
