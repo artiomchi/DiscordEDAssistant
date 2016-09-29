@@ -51,6 +51,7 @@ namespace FlexLabs.DiscordEDAssistant.Bot
             commandService.CreateCommand("setprefix")
                 .Description("Set a prefix for commands")
                 .Parameter("prefix", ParameterType.Optional)
+                .AddCheck(Check_PublicChannel)
                 .AddCheck(Check_IsServerAdmin)
                 .Do(Command_SetPrefix);
 
@@ -66,6 +67,19 @@ namespace FlexLabs.DiscordEDAssistant.Bot
                 .AddCheck(Check_PublicChannel)
                 .AddCheck(Check_IsServerAdmin)
                 .Do(Command_Welcome_Set);
+
+            commandService.CreateGroup("time", x =>
+            {
+                x.CreateCommand("")
+                    .Description("Display the in-game time (UTC)")
+                    .Do(Command_Time);
+
+                x.CreateCommand("in")
+                    .Description("Convert in-game time to local time")
+                    .Parameter("timezone", ParameterType.Required)
+                    .Parameter("time", ParameterType.Optional)
+                    .Do(Command_TimeIn);
+            });
 
             commandService.CreateCommand("about")
                 .Alias("uptime", "status")
@@ -257,6 +271,72 @@ namespace FlexLabs.DiscordEDAssistant.Bot
             Message[] messages;
             while ((messages = await e.Channel.DownloadMessages()).Length > 0)
                 await e.Channel.DeleteMessages(messages);
+        }
+
+        private Task Command_Time(CommandEventArgs e)
+            => e.Channel.SendMessage($"Current in-game time: `{DateTime.UtcNow.ToLongTimeString()}` (UTC)");
+
+        private async Task Command_TimeIn(CommandEventArgs e)
+        {
+            var timeZoneName = e.GetArg("timezone");
+            var timeZone = GetTimeZone(timeZoneName);
+            if (timeZone == null)
+            {
+                await e.Channel.SendMessage("Could not understand the time zone name");
+                return;
+            }
+
+            DateTime time;
+            var customTime = false;
+            if (!string.IsNullOrWhiteSpace(e.GetArg("time")))
+            {
+                customTime = true;
+                if (!DateTime.TryParse(e.GetArg("time"), out time))
+                {
+                    await e.Channel.SendMessage("Could not understand the time");
+                    return;
+                }
+            }
+            else
+            {
+                time = DateTime.UtcNow;
+            }
+
+            var newTime = TimeZoneInfo.ConvertTimeFromUtc(time, timeZone);
+            if (customTime)
+                await e.Channel.SendMessage($"The time in `{timeZoneName}` at `{time.ToLongTimeString()}` UTC will be `{newTime.ToLongTimeString()}`");
+            else
+                await e.Channel.SendMessage($"The time in `{timeZoneName}` is `{newTime.ToLongTimeString()}`");
+        }
+
+        private TimeZoneInfo GetTimeZone(String timeZoneName)
+        {
+            switch (timeZoneName.ToLowerInvariant())
+            {
+                case "pdt":
+                case "pst": return TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
+                case "cdt":
+                case "cst": return TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time");
+                case "edt":
+                case "est": return TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
+                case "bst":
+                case "gmt": return TimeZoneInfo.FindSystemTimeZoneById("GMT Standard Time");
+                case "utc": return TimeZoneInfo.FindSystemTimeZoneById("UTC");
+                case "cet": return TimeZoneInfo.FindSystemTimeZoneById("Central Europe Standard Time");
+                case "eet": return TimeZoneInfo.FindSystemTimeZoneById("E. Europe Standard Time");
+                case "ch": return TimeZoneInfo.FindSystemTimeZoneById("China Standard Time");
+                case "aus": return TimeZoneInfo.FindSystemTimeZoneById("AUS Central Standard Time");
+                case "eaus": return TimeZoneInfo.FindSystemTimeZoneById("AUS Eastern Standard Time");
+                default:
+                    try
+                    {
+                        return TimeZoneInfo.FindSystemTimeZoneById(timeZoneName);
+                    }
+                    catch
+                    {
+                        return null;
+                    }
+            }
         }
 
         private async Task Command_Status(CommandEventArgs e)
