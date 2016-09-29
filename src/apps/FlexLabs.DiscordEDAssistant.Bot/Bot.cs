@@ -1,6 +1,8 @@
 ﻿using Discord;
 using Discord.Commands;
+using FlexLabs.DiscordEDAssistant.Services;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -10,12 +12,16 @@ namespace FlexLabs.DiscordEDAssistant.Bot
 {
     public class Bot
     {
+        private IServiceProvider _serviceProvider;
+        private String _clientID;
         private DiscordClient _client;
         private String _welcomeMessage = "Welcome {user}! Please read the intro details in #welcome";
         private DateTime _start = DateTime.MinValue;
+        private Dictionary<ulong, string> _serverPrefixes = new Dictionary<ulong, string>();
 
-        public Bot()
+        public Bot(IServiceProvider serviceProvider)
         {
+            _serviceProvider = serviceProvider;
             _client = new DiscordClient(x =>
             {
                 x.AppName = "Elite Dangerous Assistant Bot";
@@ -30,8 +36,18 @@ namespace FlexLabs.DiscordEDAssistant.Bot
 
             _client.UsingCommands(x =>
             {
-                x.PrefixChar = '~';
                 x.HelpMode = HelpMode.Disabled;
+                x.CustomPrefixHandler = m =>
+                {
+                    if (m.Channel.IsPrivate)
+                        return 0;
+
+                    var prefix = GetServerPrefix(m.Server.Id);
+                    if (prefix == null || !m.Text.StartsWith(prefix))
+                        return 0;
+
+                    return prefix.Length;
+                };
             });
 
             var commandService = _client.GetService<CommandService>();
@@ -40,11 +56,11 @@ namespace FlexLabs.DiscordEDAssistant.Bot
                 .Parameter("Public", ParameterType.Optional)
                 .Do(Command_Help);
 
-            commandService.CreateCommand("greet")
-                .Alias(new[] { "gr", "hi" })
-                .Description("Greet a person")
-                .Parameter("GreetedPerson", ParameterType.Required)
-                .Do(Command_Greet);
+            commandService.CreateCommand("setprefix")
+                .Description("Set a prefix for commands")
+                .Parameter("Prefix", ParameterType.Required)
+                .AddCheck(Check_IsAdmin)
+                .Do(Command_SetPrefix);
 
             commandService.CreateCommand("welcome")
                 .Description("Set welcome message")
@@ -54,9 +70,9 @@ namespace FlexLabs.DiscordEDAssistant.Bot
 
             commandService.CreateCommand("welcome")
                 .Description("Set welcome message")
+                .Parameter("Message", ParameterType.Required)
                 .AddCheck((cmd, u, ch) => !ch.IsPrivate)
                 .AddCheck(Check_IsAdmin)
-                .Parameter("Message", ParameterType.Required)
                 .Do(Command_Welcome_Set);
 
             commandService.CreateCommand("clear-channel-history")
@@ -67,6 +83,7 @@ namespace FlexLabs.DiscordEDAssistant.Bot
                 .Do(Command_Clear_Channel_History);
 
             commandService.CreateCommand("status")
+                .Alias("uptime", "about")
                 .Description("Display server status")
                 .Do(Command_Status);
 
@@ -76,13 +93,32 @@ namespace FlexLabs.DiscordEDAssistant.Bot
                 e.Server.DefaultChannel.SendMessage(ProcessMessageChannelLinks(e.Server, e.User, _welcomeMessage));
             };
         }
-        public void Start(String botToken)
+
+        public void Start(String botToken, String clientID)
         {
+            _clientID = clientID;
             _start = DateTime.UtcNow;
             _client.ExecuteAndWait(async () =>
             {
                 await _client.Connect(botToken, TokenType.Bot);
             });
+        }
+
+        private String GetServerPrefix(UInt64 serverID)
+        {
+            if (_serverPrefixes.ContainsKey(serverID))
+                return _serverPrefixes[serverID];
+
+            using (var serversService = _serviceProvider.GetService(typeof(ServersService)) as ServersService)
+            {
+                var server = serversService.Load(serverID);
+                var commandPrefix = server?.CommandPrefix;
+
+                if (commandPrefix != null)
+                    _serverPrefixes[serverID] = commandPrefix;
+
+                return commandPrefix;
+            }
         }
 
         private Boolean Check_IsAdmin(Command cmd, User u, Channel ch)
@@ -114,15 +150,16 @@ namespace FlexLabs.DiscordEDAssistant.Bot
                     Description = command.Description,
                 };
             });
-            var maxLength = Math.Max(10, commandsHelp.Max(c => c.Name.Length + c.Arguments.Length) + 2);
+            var maxLength = Math.Max(10, commandsHelp.Max(c => c.Name.Length + c.Arguments.Length) + 1);
 
+            var prefix = GetServerPrefix(e.Server.Id);
             var message = new StringBuilder();
             message.AppendLine("Available commands:");
-            message.AppendLine("```");
+            message.AppendLine("```http");
             foreach (var command in commandsHelp)
             {
                 var padding = maxLength - command.Name.Length - command.Arguments.Length;
-                message.AppendLine($"{commandService.Config.PrefixChar}{command.Name}{command.Arguments}{new String(' ', padding)}| {command.Description}");
+                message.AppendLine($"{prefix}{command.Name}{command.Arguments}{new String(' ', padding)}: {command.Description}");
             }
             message.AppendLine("```");
 
@@ -140,8 +177,16 @@ namespace FlexLabs.DiscordEDAssistant.Bot
             }
         }
 
-        private Task Command_Greet(CommandEventArgs e)
-            => e.Channel.SendMessage($"Hello {e.GetArg("GreetedPerson")}!");
+        private async Task Command_SetPrefix(CommandEventArgs e)
+        {
+            var prefix = e.GetArg("Prefix");
+
+            using (var serversService = _serviceProvider.GetService(typeof(ServersService)) as ServersService)
+            {
+                serversService.SetCommandPrefix(e.Server.Id, prefix);
+            }
+            await e.Channel.SendMessage("Prefix updated");
+        }
 
         private String ProcessMessageChannelLinks(Server server, User user, String message)
         {
@@ -183,14 +228,22 @@ namespace FlexLabs.DiscordEDAssistant.Bot
                 await e.Channel.DeleteMessages(messages);
         }
 
-        private Task Command_Status(CommandEventArgs e)
-            => e.Channel.SendMessage(
+        private async Task Command_Status(CommandEventArgs e)
+        {
+            var message = 
 $@"```
 Status:             OK
 Current location:   {Environment.MachineName}
 Uptime:             {DateTime.UtcNow.Subtract(_start).ToString()}
 Build:              {Program.GetVersion()}
 Build time:         {Program.GetBuildTime()}
-```");
+```";
+            if (_clientID != null)
+                message+= $@"
+If you want to add this bot to your server, follow this link:
+https://discordapp.com/oauth2/authorize?client_id={_clientID}&scope=bot&permissions=3072";
+
+            await e.Channel.SendMessage(message);
+        }
     }
 }
