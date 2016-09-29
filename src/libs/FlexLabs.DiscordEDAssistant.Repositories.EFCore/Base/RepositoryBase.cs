@@ -18,20 +18,20 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
 
         public DateTime GetDate() => DateTime.UtcNow;
 
-        protected Int64 ConvertID(UInt64 id)
+        protected long ConvertID(ulong id)
         {
-            if (id <= Int64.MaxValue)
+            if (id <= long.MaxValue)
                 return Convert.ToInt64(id);
 
-            return -Convert.ToInt64(id - Int64.MaxValue);
+            return -Convert.ToInt64(id - long.MaxValue);
         }
 
-        protected UInt64 ConvertID(Int64 id)
+        protected ulong ConvertID(long id)
         {
             if (id >= 0)
                 return Convert.ToUInt64(id);
 
-            return Convert.ToUInt64(-id) + Int64.MaxValue;
+            return Convert.ToUInt64(-id) + long.MaxValue;
         }
     }
 }
