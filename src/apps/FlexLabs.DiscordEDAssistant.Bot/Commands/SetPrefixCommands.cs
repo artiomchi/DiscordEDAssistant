@@ -1,5 +1,5 @@
 ﻿using Discord.Commands;
-using FlexLabs.DiscordEDAssistant.Services;
+using FlexLabs.DiscordEDAssistant.Services.Data;
 
 namespace FlexLabs.DiscordEDAssistant.Bot.Commands
 {

@@ -1,7 +1,7 @@
 ﻿using Discord;
 using Discord.Commands;
 using FlexLabs.DiscordEDAssistant.Bot.Commands;
-using FlexLabs.DiscordEDAssistant.Services;
+using FlexLabs.DiscordEDAssistant.Services.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
