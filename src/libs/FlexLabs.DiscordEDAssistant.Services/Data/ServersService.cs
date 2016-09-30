@@ -1,4 +1,4 @@
-﻿using FlexLabs.DiscordEDAssistant.Models;
+﻿using FlexLabs.DiscordEDAssistant.Models.Data;
 using FlexLabs.DiscordEDAssistant.Repositories;
 using System;
 

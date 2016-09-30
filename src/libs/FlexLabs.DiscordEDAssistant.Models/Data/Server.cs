@@ -1,4 +1,4 @@
-﻿namespace FlexLabs.DiscordEDAssistant.Models
+﻿namespace FlexLabs.DiscordEDAssistant.Models.Data
 {
     public class Server
     {
