@@ -1,6 +1,6 @@
 ﻿using FlexLabs.DiscordEDAssistant.Repositories;
 using FlexLabs.DiscordEDAssistant.Repositories.EFCore;
-using FlexLabs.DiscordEDAssistant.Services;
+using FlexLabs.DiscordEDAssistant.Services.Data;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FlexLabs.DiscordEDAssistant.Injection
