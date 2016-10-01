@@ -46,7 +46,7 @@ namespace FlexLabs.DiscordEDAssistant.Bot
             var commandService = _client.GetService<CommandService>();
             commandService.CreateCommand("help")
                 .Hide()
-                .Parameter("public", ParameterType.Optional)
+                .Parameter("public", ParameterType.Multiple)
                 .Do(Command_Help);
 
             commandService.CreateCommands_SetPrefix();
@@ -58,13 +58,6 @@ namespace FlexLabs.DiscordEDAssistant.Bot
             commandService.CreateCommands_Eddb();
 
             commandService.CreateCommands_About();
-
-            commandService.CreateCommand("clear-channel-history")
-                .Hide()
-                .Parameter("password", ParameterType.Required)
-                .AddCheck(Check_PublicChannel)
-                .AddCheck(Check_IsServerAdmin)
-                .Do(Command_Clear_Channel_History);
         }
 
         public void Start(string botToken, string clientID)
@@ -99,9 +92,12 @@ namespace FlexLabs.DiscordEDAssistant.Bot
 
         private async Task Command_Help(CommandEventArgs e)
         {
+            var pub = e.Args?.Length > 0 && e.Args.Any(a => String.Equals("here", a, StringComparison.OrdinalIgnoreCase));
+            var all = (e.Channel.IsPrivate || e.User.ServerPermissions.Administrator) && e.Args?.Length > 0 && e.Args.Any(a => String.Equals("all", a, StringComparison.OrdinalIgnoreCase));
+
             var commandService = _client.GetService<CommandService>();
             var commands = commandService.AllCommands.OfType<Command>()
-                .Where(c => !c.IsHidden)
+                .Where(c => all || !c.IsHidden)
                 .Where(c =>
                 {
                     var method = typeof(Command).GetMethod("CanRun", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
@@ -141,9 +137,6 @@ namespace FlexLabs.DiscordEDAssistant.Bot
             }
             message.AppendLine("```");
 
-            var pub = e.Args.Length > 0
-                ? string.Equals(e.GetArg("public"), "here", StringComparison.OrdinalIgnoreCase)
-                : false;
             if (e.Channel.IsPrivate || pub)
             {
                 await e.Channel.SendMessage(message.ToString());
@@ -153,20 +146,6 @@ namespace FlexLabs.DiscordEDAssistant.Bot
                 await e.User.SendMessage(message.ToString());
                 await e.Channel.SendMessage($"{e.User.Mention} Bot instructions have been sent to you as a Direct Message");
             }
-        }
-
-        private async Task Command_Clear_Channel_History(CommandEventArgs e)
-        {
-            var pass = e.GetArg("password");
-            if (pass != "passw0rd!")
-            {
-                await e.Channel.SendMessage("Password invalid!");
-                return;
-            }
-
-            Message[] messages;
-            while ((messages = await e.Channel.DownloadMessages()).Length > 0)
-                await e.Channel.DeleteMessages(messages);
         }
     }
 }

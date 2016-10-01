@@ -21,11 +21,13 @@ namespace FlexLabs.DiscordEDAssistant.Bot.Commands
             {
                 x.CreateCommand("sync")
                     .Hide()
+                    .Description("Sync the core data from EDDB")
                     .AddCheck(Bot.Check_IsServerAdmin)
                     .Do(Command_Eddb_Sync);
 
                 x.CreateCommand("sync allsystems")
                     .Hide()
+                    .Description("Sync the full system list from EDDB")
                     .AddCheck(Bot.Check_IsServerAdmin)
                     .Do(Command_Eddb_Sync_AllSystems);
             });
