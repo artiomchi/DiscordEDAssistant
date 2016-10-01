@@ -32,5 +32,11 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
         }
 
         public DbSet<Server> Servers { get; set; }
+        public DbSet<Eddb_Module> Eddb_Modules { get; set; }
+        public DbSet<Eddb_Modules_Category> Eddb_Modules_Categories { get; set; }
+        public DbSet<Eddb_Modules_Group> Eddb_Modules_Groups { get; set; }
+        public DbSet<Eddb_System> Eddb_Systems { get; set; }
+        public DbSet<Upload_Eddb_Module> Upload_Eddb_Modules { get; set; }
+        public DbSet<Upload_Eddb_System> Upload_Eddb_Systems { get; set; }
     }
 }
