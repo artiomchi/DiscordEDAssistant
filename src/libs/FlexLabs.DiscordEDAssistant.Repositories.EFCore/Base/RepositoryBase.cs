@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
 {
@@ -17,6 +18,8 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
         }
 
         public DateTime GetDate() => DateTime.UtcNow;
+
+        public void SetLongTimeout() => DataContext.Database.SetCommandTimeout(300000);
 
         protected long ConvertID(ulong id)
         {

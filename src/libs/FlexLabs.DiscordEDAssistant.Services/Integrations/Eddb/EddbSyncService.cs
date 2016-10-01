@@ -87,7 +87,7 @@ namespace FlexLabs.DiscordEDAssistant.Services.Integrations.Eddb
         {
             _updateRepository.ClearAll();
 
-            await StreamProcessEntitiesAsync<Models.System>("systems.jsonl", systems => _updateRepository.UploadAll(systems.Select(s => s.Translate())));
+            await StreamProcessEntitiesAsync<Models.System>("systems.jsonl", systems => _updateRepository.BulkUploadSystemsAsync(systems.Select(s => s.Translate())));
 
             _updateRepository.MergeAllSystems();
         }

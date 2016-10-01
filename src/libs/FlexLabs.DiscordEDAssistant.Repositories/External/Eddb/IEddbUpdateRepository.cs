@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using FlexLabs.DiscordEDAssistant.Models.External.Eddb;
+using System.Threading.Tasks;
 
 namespace FlexLabs.DiscordEDAssistant.Repositories.External.Eddb
 {
@@ -9,6 +10,7 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.External.Eddb
         void ClearAll();
         void UploadAll(IEnumerable<Module> modules);
         void UploadAll(IEnumerable<Models.External.Eddb.System> systems);
+        Task BulkUploadSystemsAsync(IEnumerable<Models.External.Eddb.System> systems);
         void MergeAll();
         void MergeAllSystems();
     }
