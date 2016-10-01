@@ -79,8 +79,8 @@ namespace FlexLabs.DiscordEDAssistant.Services.Integrations.Eddb
         private Task<Models.Commodity[]> DownloadCommoditiesAsync() => DownloadEntitiesAsync<Models.Commodity>("commmodities.json");
         private Task<Models.Module[]> DownloadModulesAsync() => DownloadEntitiesAsync<Models.Module>("modules.json");
         private Task<Models.Station[]> DownloadStationsAsync() => DownloadEntitiesAsync<Models.Station>("stations.json");
-        private Task<Models.System[]> DownloadSystemsAsync() => DownloadEntitiesAsync<Models.System>("systems_populated.json");
-        private Task<Models.System[]> DownloadSystemsAllAsync() => DownloadEntitiesAsync<Models.System>("systems.json");
+        private Task<Models.StarSystem[]> DownloadSystemsAsync() => DownloadEntitiesAsync<Models.StarSystem>("systems_populated.json");
+        private Task<Models.StarSystem[]> DownloadSystemsAllAsync() => DownloadEntitiesAsync<Models.StarSystem>("systems.json");
 
         public async Task SyncAsync()
         {
@@ -89,7 +89,7 @@ namespace FlexLabs.DiscordEDAssistant.Services.Integrations.Eddb
             await StreamProcessEntitiesAsync<Models.Module>("modules.jsonl",
                 modules => _updateRepository.BulkUploadAsync(modules.Select(m => m.Translate())));
 
-            await StreamProcessEntitiesAsync<Models.System>("systems_populated.jsonl",
+            await StreamProcessEntitiesAsync<Models.StarSystem>("systems_populated.jsonl",
                 systems => _updateRepository.BulkUploadAsync(systems.Select(s => s.Translate())));
 
             _updateRepository.MergeAll();
@@ -99,7 +99,7 @@ namespace FlexLabs.DiscordEDAssistant.Services.Integrations.Eddb
         {
             _updateRepository.ClearAll();
 
-            await StreamProcessEntitiesAsync<Models.System>("systems.jsonl", systems => _updateRepository.BulkUploadAsync(systems.Select(s => s.Translate())));
+            await StreamProcessEntitiesAsync<Models.StarSystem>("systems.jsonl", systems => _updateRepository.BulkUploadAsync(systems.Select(s => s.Translate())));
 
             _updateRepository.MergeAllSystems();
         }

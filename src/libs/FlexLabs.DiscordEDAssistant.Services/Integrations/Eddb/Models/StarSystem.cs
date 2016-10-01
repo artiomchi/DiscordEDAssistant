@@ -1,6 +1,6 @@
 ﻿namespace FlexLabs.DiscordEDAssistant.Services.Integrations.Eddb.Models
 {
-    public class System
+    public class StarSystem
     {
         public int id { get; set; }
         //public int edsm_id { get; set; }
@@ -23,8 +23,8 @@
         public bool is_populated { get; set; }
         //public string reserve_type { get; set; }
 
-        public DiscordEDAssistant.Models.External.Eddb.System Translate()
-            => new DiscordEDAssistant.Models.External.Eddb.System
+        public DiscordEDAssistant.Models.External.Eddb.StarSystem Translate()
+            => new DiscordEDAssistant.Models.External.Eddb.StarSystem
             {
                 ID = id,
                 Name = name,

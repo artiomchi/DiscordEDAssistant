@@ -14,5 +14,16 @@
             public int id { get; set; }
             public string name { get; set; }
         }
+
+        public DiscordEDAssistant.Models.External.Eddb.Commodity Translate()
+            => new DiscordEDAssistant.Models.External.Eddb.Commodity
+            {
+                ID = id,
+                Name = name,
+                AveragePrice = average_price,
+                IsRare = is_rare == 1,
+                CategoryID = category.id,
+                CategoryName = category.name,
+            };
     }
 }

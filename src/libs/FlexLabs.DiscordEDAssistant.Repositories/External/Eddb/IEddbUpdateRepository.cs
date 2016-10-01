@@ -9,7 +9,7 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.External.Eddb
     {
         void ClearAll();
         Task BulkUploadAsync(IEnumerable<Module> modules);
-        Task BulkUploadAsync(IEnumerable<Models.External.Eddb.System> systems);
+        Task BulkUploadAsync(IEnumerable<Models.External.Eddb.StarSystem> systems);
         void MergeAll();
         void MergeAllSystems();
     }

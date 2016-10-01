@@ -10,11 +10,11 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCompact.External.Eddb
             : base(context)
         { }
 
-        public Models.External.Eddb.System GetSystem(string name)
+        public Models.External.Eddb.StarSystem GetSystem(string name)
         {
-            return DataContext.Eddb_Systems
+            return DataContext.Eddb_StarSystems
                 .Where(s => s.Name == name)
-                .Select(s => new Models.External.Eddb.System
+                .Select(s => new Models.External.Eddb.StarSystem
                 {
                     ID = s.ID,
                     Name = s.Name,
