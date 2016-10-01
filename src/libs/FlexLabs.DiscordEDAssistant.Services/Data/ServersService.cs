@@ -1,8 +1,8 @@
-﻿using FlexLabs.DiscordEDAssistant.Models;
+﻿using FlexLabs.DiscordEDAssistant.Models.Data;
 using FlexLabs.DiscordEDAssistant.Repositories;
 using System;
 
-namespace FlexLabs.DiscordEDAssistant.Services
+namespace FlexLabs.DiscordEDAssistant.Services.Data
 {
     public class ServersService : IDisposable
     {

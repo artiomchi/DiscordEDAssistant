@@ -8,9 +8,10 @@ using FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base;
 namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base.Migrations
 {
     [DbContext(typeof(EDAssistantDataContext))]
-    partial class EDAssistantDataContextModelSnapshot : ModelSnapshot
+    [Migration("20161001002906_EddbFirstSync")]
+    partial class EddbFirstSync
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.1")
