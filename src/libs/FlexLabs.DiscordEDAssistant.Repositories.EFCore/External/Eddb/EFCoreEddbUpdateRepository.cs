@@ -28,7 +28,7 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCompact.External.Eddb
                     CategoryID = c.CategoryID,
                     CategoryName = c.CategoryName,
                 });
-            return BulkUploadEntitiesAsync(entities, "[upload].[Eddb_Modules]");
+            return BulkUploadEntitiesAsync(entities, "[upload].[Eddb_Commodities]");
         }
 
         public Task BulkUploadAsync(IEnumerable<Models.External.Eddb.Module> modules)
@@ -40,7 +40,7 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCompact.External.Eddb
                     Name = m.Name,
                     Price = m.Price,
                     Class = m.Class,
-                    Rating = m.Rating,
+                    Rating = (byte?)m.Rating,
                     WeaponMode = (byte?)m.WeaponMode,
                     MissileType = m.MissileType,
                     Mass = m.Mass,
@@ -128,7 +128,10 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCompact.External.Eddb
         }
 
         public void MergeAll()
-            => DataContext.Database.ExecuteSqlCommand("[upload].[Eddb_Merge]");
+        {
+            SetLongTimeout();
+            DataContext.Database.ExecuteSqlCommand("[upload].[Eddb_Merge]");
+        }
 
         public void MergeAllSystems()
         {

@@ -1,4 +1,6 @@
-﻿namespace FlexLabs.DiscordEDAssistant.Models.External.Eddb
+﻿using System;
+
+namespace FlexLabs.DiscordEDAssistant.Models.External.Eddb
 {
     public class Station
     {
@@ -22,10 +24,10 @@
         public bool HasShipyard { get; set; }
         public bool HasDocking { get; set; }
         public bool HasCommodities { get; set; }
-        public int UpdatedAt { get; set; }
-        public int? ShipyardUpdatedAt { get; set; }
-        public int? OutfittingUpdatedAt { get; set; }
-        public int? MarketUpdatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+        public DateTime? ShipyardUpdatedAt { get; set; }
+        public DateTime? OutfittingUpdatedAt { get; set; }
+        public DateTime? MarketUpdatedAt { get; set; }
         public bool IsPlanetary { get; set; }
         public string[] SellingShips { get; set; }
         public int[] SellingModules { get; set; }

@@ -1,4 +1,6 @@
-﻿namespace FlexLabs.DiscordEDAssistant.Services.Integrations.Eddb.Models
+﻿using FlexLabs.DiscordEDAssistant.Base.Extensions;
+
+namespace FlexLabs.DiscordEDAssistant.Services.Integrations.Eddb.Models
 {
     public class Station
     {
@@ -57,10 +59,10 @@
                 HasShipyard = has_shipyard,
                 HasDocking = has_docking,
                 HasCommodities = has_commodities,
-                UpdatedAt = updated_at,
-                ShipyardUpdatedAt = shipyard_updated_at,
-                OutfittingUpdatedAt = outfitting_updated_at,
-                MarketUpdatedAt = market_updated_at,
+                UpdatedAt = updated_at.UnixTimeStampToDateTime(),
+                ShipyardUpdatedAt = shipyard_updated_at?.UnixTimeStampToDateTime(),
+                OutfittingUpdatedAt = outfitting_updated_at?.UnixTimeStampToDateTime(),
+                MarketUpdatedAt = market_updated_at?.UnixTimeStampToDateTime(),
                 IsPlanetary = is_planetary,
                 SellingShips = selling_ships,
                 SellingModules = selling_modules,

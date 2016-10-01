@@ -82,17 +82,33 @@ namespace FlexLabs.DiscordEDAssistant.Services.Integrations.Eddb
         private Task<Models.StarSystem[]> DownloadSystemsAsync() => DownloadEntitiesAsync<Models.StarSystem>("systems_populated.json");
         private Task<Models.StarSystem[]> DownloadSystemsAllAsync() => DownloadEntitiesAsync<Models.StarSystem>("systems.json");
 
-        public async Task SyncAsync()
+        public async Task<bool> SyncAsync()
         {
             _updateRepository.ClearAll();
 
-            await StreamProcessEntitiesAsync<Models.Module>("modules.jsonl",
-                modules => _updateRepository.BulkUploadAsync(modules.Select(m => m.Translate())));
+            var commodities = await DownloadEntitiesAsync<Models.Commodity>("commodities.json");
+            if (commodities == null) return false;
+            await _updateRepository.BulkUploadAsync(commodities.Select(m => m.Translate()));
+
+            var modules = await DownloadEntitiesAsync<Models.Module>("modules.json");
+            if (modules == null) return false;
+            await _updateRepository.BulkUploadAsync(modules.Select(m => m.Translate()));
 
             await StreamProcessEntitiesAsync<Models.StarSystem>("systems_populated.jsonl",
                 systems => _updateRepository.BulkUploadAsync(systems.Select(s => s.Translate())));
 
+            await StreamProcessEntitiesAsync<Models.Station>("stations.jsonl",
+                async stations =>
+                {
+                    var stat = stations.Select(s => s.Translate());
+                    await _updateRepository.BulkUploadAsync(stat);
+                    await _updateRepository.BulkUploadStationModulesAsync(stat);
+                    await _updateRepository.BulkUploadStationShipsAsync(stat);
+                });
+
             _updateRepository.MergeAll();
+
+            return true;
         }
 
         public async Task SyncAllSystemsAsync()

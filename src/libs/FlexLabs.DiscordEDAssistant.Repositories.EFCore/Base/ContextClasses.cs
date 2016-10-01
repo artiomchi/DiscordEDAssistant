@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -51,7 +52,7 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
         public string Name { get; set; }
         public int? Price { get; set; }
         public byte Class { get; set; }
-        public char Rating { get; set; }
+        public byte? Rating { get; set; }
         public byte? WeaponMode { get; set; }
         public byte? MissileType { get; set; }
         public float Mass { get; set; }
@@ -119,10 +120,10 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
         public bool HasShipyard { get; set; }
         public bool HasDocking { get; set; }
         public bool HasCommodities { get; set; }
-        public int UpdatedAt { get; set; }
-        public int? ShipyardUpdatedAt { get; set; }
-        public int? OutfittingUpdatedAt { get; set; }
-        public int? MarketUpdatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+        public DateTime? ShipyardUpdatedAt { get; set; }
+        public DateTime? OutfittingUpdatedAt { get; set; }
+        public DateTime? MarketUpdatedAt { get; set; }
         public bool IsPlanetary { get; set; }
 
         [ForeignKey(nameof(TypeID))]
@@ -208,7 +209,7 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
         public string Name { get; set; }
         public int? Price { get; set; }
         public byte Class { get; set; }
-        public char Rating { get; set; }
+        public byte? Rating { get; set; }
         public byte? WeaponMode { get; set; }
         public byte? MissileType { get; set; }
         public float Mass { get; set; }
@@ -267,10 +268,10 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
         public bool HasShipyard { get; set; }
         public bool HasDocking { get; set; }
         public bool HasCommodities { get; set; }
-        public int UpdatedAt { get; set; }
-        public int? ShipyardUpdatedAt { get; set; }
-        public int? OutfittingUpdatedAt { get; set; }
-        public int? MarketUpdatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+        public DateTime? ShipyardUpdatedAt { get; set; }
+        public DateTime? OutfittingUpdatedAt { get; set; }
+        public DateTime? MarketUpdatedAt { get; set; }
         public bool IsPlanetary { get; set; }
     }
 

@@ -8,8 +8,12 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.External.Eddb
     public interface IEddbUpdateRepository : IDisposable
     {
         void ClearAll();
+        Task BulkUploadAsync(IEnumerable<Commodity> modules);
         Task BulkUploadAsync(IEnumerable<Module> modules);
-        Task BulkUploadAsync(IEnumerable<Models.External.Eddb.StarSystem> systems);
+        Task BulkUploadAsync(IEnumerable<StarSystem> systems);
+        Task BulkUploadAsync(IEnumerable<Station> systems);
+        Task BulkUploadStationModulesAsync(IEnumerable<Station> systems);
+        Task BulkUploadStationShipsAsync(IEnumerable<Station> systems);
         void MergeAll();
         void MergeAllSystems();
     }

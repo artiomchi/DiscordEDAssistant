@@ -5,7 +5,7 @@
         public int id { get; set; }
         //public int? group_id { get; set; }
         public byte @class { get; set; }
-        public char rating { get; set; }
+        public char? rating { get; set; }
         public int? price { get; set; }
         public DiscordEDAssistant.Models.External.Eddb.ModuleWeaponMode? weapon_mode { get; set; }
         public byte? missile_type { get; set; }
