@@ -1,6 +1,7 @@
 ﻿using FlexLabs.DiscordEDAssistant.Repositories.External.Eddb;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -35,32 +36,42 @@ namespace FlexLabs.DiscordEDAssistant.Services.Integrations.Eddb
 
         private async Task StreamProcessEntitiesAsync<TEntity>(string fileName, Func<List<TEntity>, Task> action)
         {
-            using (var handler = new HttpClientHandler { AutomaticDecompression = System.Net.DecompressionMethods.GZip | System.Net.DecompressionMethods.Deflate })
-            using (var client = new HttpClient(handler))
+            using (var queue = new BlockingCollection<List<TEntity>>(5))
             {
-                var response = await client.GetAsync("https://eddb.io/archive/v4/" + fileName, HttpCompletionOption.ResponseHeadersRead);
-                if (!response.IsSuccessStatusCode)
-                    return;
-
-                using (var stream = await response.Content.ReadAsStreamAsync())
-                using (var reader = new StreamReader(stream))
+                var process = Task.Run(async () =>
                 {
-                    var buffer = new List<TEntity>();
-                    int i = 0;
-                    string line;
-                    while ((line = await reader.ReadLineAsync()) != null)
+                    foreach (var list in queue.GetConsumingEnumerable())
+                        await action(list);
+                });
+
+                using (var handler = new HttpClientHandler { AutomaticDecompression = System.Net.DecompressionMethods.GZip | System.Net.DecompressionMethods.Deflate })
+                using (var client = new HttpClient(handler))
+                {
+                    var response = await client.GetAsync("https://eddb.io/archive/v4/" + fileName, HttpCompletionOption.ResponseHeadersRead);
+                    if (!response.IsSuccessStatusCode)
+                        return;
+
+                    using (var stream = await response.Content.ReadAsStreamAsync())
+                    using (var reader = new StreamReader(stream))
                     {
-                        buffer.Add(JsonConvert.DeserializeObject<TEntity>(line));
-                        if (i++ > 50000)
+                        string line;
+                        var buffer = new List<TEntity>();
+                        while ((line = await reader.ReadLineAsync()) != null)
                         {
-                            await action(buffer);
-                            buffer = new List<TEntity>();
-                            i = 0;
+                            buffer.Add(JsonConvert.DeserializeObject<TEntity>(line));
+                            if (buffer.Count > 10000)
+                            {
+                                queue.Add(buffer);
+                                buffer = new List<TEntity>();
+                            }
                         }
+                        if (buffer.Count > 0)
+                            queue.Add(buffer);
+                        queue.CompleteAdding();
                     }
-                    if (buffer.Count > 0)
-                        await action(buffer);
                 }
+
+                await process;
             }
         }
 
@@ -75,9 +86,11 @@ namespace FlexLabs.DiscordEDAssistant.Services.Integrations.Eddb
         {
             _updateRepository.ClearAll();
 
-            await StreamProcessEntitiesAsync<Models.Module>("modules.jsonl", modules => _updateRepository.BulkUploadAsync(modules.Select(m => m.Translate())));
+            await StreamProcessEntitiesAsync<Models.Module>("modules.jsonl",
+                modules => _updateRepository.BulkUploadAsync(modules.Select(m => m.Translate())));
 
-            await StreamProcessEntitiesAsync<Models.System>("systems_populated.jsonl", systems => _updateRepository.BulkUploadAsync(systems.Select(s => s.Translate())));
+            await StreamProcessEntitiesAsync<Models.System>("systems_populated.jsonl",
+                systems => _updateRepository.BulkUploadAsync(systems.Select(s => s.Translate())));
 
             _updateRepository.MergeAll();
         }
