@@ -1,6 +1,7 @@
 ﻿using FlexLabs.DiscordEDAssistant.Repositories.External.Eddb;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -33,34 +34,44 @@ namespace FlexLabs.DiscordEDAssistant.Services.Integrations.Eddb
             }
         }
 
-        private async Task StreamProcessEntitiesAsync<TEntity>(string fileName, Action<List<TEntity>> action)
+        private async Task StreamProcessEntitiesAsync<TEntity>(string fileName, Func<List<TEntity>, Task> action)
         {
-            using (var handler = new HttpClientHandler { AutomaticDecompression = System.Net.DecompressionMethods.GZip | System.Net.DecompressionMethods.Deflate })
-            using (var client = new HttpClient(handler))
+            using (var queue = new BlockingCollection<List<TEntity>>(5))
             {
-                var response = await client.GetAsync("https://eddb.io/archive/v4/" + fileName, HttpCompletionOption.ResponseHeadersRead);
-                if (!response.IsSuccessStatusCode)
-                    return;
-
-                using (var stream = await response.Content.ReadAsStreamAsync())
-                using (var reader = new StreamReader(stream))
+                var process = Task.Run(async () =>
                 {
-                    var buffer = new List<TEntity>();
-                    int i = 0;
-                    string line;
-                    while ((line = await reader.ReadLineAsync()) != null)
+                    foreach (var list in queue.GetConsumingEnumerable())
+                        await action(list);
+                });
+
+                using (var handler = new HttpClientHandler { AutomaticDecompression = System.Net.DecompressionMethods.GZip | System.Net.DecompressionMethods.Deflate })
+                using (var client = new HttpClient(handler))
+                {
+                    var response = await client.GetAsync("https://eddb.io/archive/v4/" + fileName, HttpCompletionOption.ResponseHeadersRead);
+                    if (!response.IsSuccessStatusCode)
+                        return;
+
+                    using (var stream = await response.Content.ReadAsStreamAsync())
+                    using (var reader = new StreamReader(stream))
                     {
-                        buffer.Add(JsonConvert.DeserializeObject<TEntity>(line));
-                        if (i++ > 50000)
+                        string line;
+                        var buffer = new List<TEntity>();
+                        while ((line = await reader.ReadLineAsync()) != null)
                         {
-                            action(buffer);
-                            buffer = new List<TEntity>();
-                            i = 0;
+                            buffer.Add(JsonConvert.DeserializeObject<TEntity>(line));
+                            if (buffer.Count > 10000)
+                            {
+                                queue.Add(buffer);
+                                buffer = new List<TEntity>();
+                            }
                         }
+                        if (buffer.Count > 0)
+                            queue.Add(buffer);
+                        queue.CompleteAdding();
                     }
-                    if (buffer.Count > 0)
-                        action(buffer);
                 }
+
+                await process;
             }
         }
 
@@ -68,26 +79,43 @@ namespace FlexLabs.DiscordEDAssistant.Services.Integrations.Eddb
         private Task<Models.Commodity[]> DownloadCommoditiesAsync() => DownloadEntitiesAsync<Models.Commodity>("commmodities.json");
         private Task<Models.Module[]> DownloadModulesAsync() => DownloadEntitiesAsync<Models.Module>("modules.json");
         private Task<Models.Station[]> DownloadStationsAsync() => DownloadEntitiesAsync<Models.Station>("stations.json");
-        private Task<Models.System[]> DownloadSystemsAsync() => DownloadEntitiesAsync<Models.System>("systems_populated.json");
-        private Task<Models.System[]> DownloadSystemsAllAsync() => DownloadEntitiesAsync<Models.System>("systems.json");
+        private Task<Models.StarSystem[]> DownloadSystemsAsync() => DownloadEntitiesAsync<Models.StarSystem>("systems_populated.json");
+        private Task<Models.StarSystem[]> DownloadSystemsAllAsync() => DownloadEntitiesAsync<Models.StarSystem>("systems.json");
 
-        public async Task SyncAsync()
+        public async Task<bool> SyncAsync()
         {
             _updateRepository.ClearAll();
 
-            var modules = await DownloadModulesAsync();
-            _updateRepository.UploadAll(modules.Select(m => m.Translate()));
+            var commodities = await DownloadEntitiesAsync<Models.Commodity>("commodities.json");
+            if (commodities == null) return false;
+            await _updateRepository.BulkUploadAsync(commodities.Select(m => m.Translate()));
 
-            await StreamProcessEntitiesAsync<Models.System>("systems_populated.jsonl", systems => _updateRepository.UploadAll(systems.Select(s => s.Translate())));
+            var modules = await DownloadEntitiesAsync<Models.Module>("modules.json");
+            if (modules == null) return false;
+            await _updateRepository.BulkUploadAsync(modules.Select(m => m.Translate()));
+
+            await StreamProcessEntitiesAsync<Models.StarSystem>("systems_populated.jsonl",
+                systems => _updateRepository.BulkUploadAsync(systems.Select(s => s.Translate())));
+
+            await StreamProcessEntitiesAsync<Models.Station>("stations.jsonl",
+                async stations =>
+                {
+                    var stat = stations.Select(s => s.Translate());
+                    await _updateRepository.BulkUploadAsync(stat);
+                    await _updateRepository.BulkUploadStationModulesAsync(stat);
+                    await _updateRepository.BulkUploadStationShipsAsync(stat);
+                });
 
             _updateRepository.MergeAll();
+
+            return true;
         }
 
         public async Task SyncAllSystemsAsync()
         {
             _updateRepository.ClearAll();
 
-            await StreamProcessEntitiesAsync<Models.System>("systems.jsonl", systems => _updateRepository.BulkUploadSystemsAsync(systems.Select(s => s.Translate())));
+            await StreamProcessEntitiesAsync<Models.StarSystem>("systems.jsonl", systems => _updateRepository.BulkUploadAsync(systems.Select(s => s.Translate())));
 
             _updateRepository.MergeAllSystems();
         }

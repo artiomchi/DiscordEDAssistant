@@ -6,7 +6,7 @@
         public string Name { get; set; }
         public int? Price { get; set; }
         public byte Class { get; set; }
-        public char Rating { get; set; }
+        public char? Rating { get; set; }
         public ModuleWeaponMode? WeaponMode { get; set; }
         public byte? MissileType { get; set; }
         public float Mass { get; set; }

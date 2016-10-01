@@ -8,9 +8,10 @@ using FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base;
 namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base.Migrations
 {
     [DbContext(typeof(EDAssistantDataContext))]
-    partial class EDAssistantDataContextModelSnapshot : ModelSnapshot
+    [Migration("20161001205111_EddbMoreTypes")]
+    partial class EddbMoreTypes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.1")
@@ -69,7 +70,7 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base.Migrations
 
                     b.Property<int?>("Price");
 
-                    b.Property<byte?>("Rating");
+                    b.Property<char>("Rating");
 
                     b.Property<string>("Ship")
                         .HasAnnotation("MaxLength", 255);
@@ -107,26 +108,6 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("Modules_Groups","eddb");
-                });
-
-            modelBuilder.Entity("FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base.Eddb_StarSystem", b =>
-                {
-                    b.Property<int>("ID");
-
-                    b.Property<bool>("IsPopulated");
-
-                    b.Property<string>("Name")
-                        .HasAnnotation("MaxLength", 512);
-
-                    b.Property<float>("X");
-
-                    b.Property<float>("Y");
-
-                    b.Property<float>("Z");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("StarSystems","eddb");
                 });
 
             modelBuilder.Entity("FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base.Eddb_Station", b =>
@@ -236,6 +217,26 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base.Migrations
                     b.ToTable("Stations_Types","eddb");
                 });
 
+            modelBuilder.Entity("FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base.Eddb_System", b =>
+                {
+                    b.Property<int>("ID");
+
+                    b.Property<bool>("IsPopulated");
+
+                    b.Property<string>("Name")
+                        .HasAnnotation("MaxLength", 512);
+
+                    b.Property<float>("X");
+
+                    b.Property<float>("Y");
+
+                    b.Property<float>("Z");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("StarSystems","eddb");
+                });
+
             modelBuilder.Entity("FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base.Server", b =>
                 {
                     b.Property<long>("ID");
@@ -304,7 +305,7 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base.Migrations
 
                     b.Property<int?>("Price");
 
-                    b.Property<byte?>("Rating");
+                    b.Property<char>("Rating");
 
                     b.Property<string>("Ship");
 
@@ -313,29 +314,6 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base.Migrations
                     b.HasKey("PK");
 
                     b.ToTable("Eddb_Modules","upload");
-                });
-
-            modelBuilder.Entity("FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base.Upload_Eddb_StarSystem", b =>
-                {
-                    b.Property<int>("PK")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int>("ID");
-
-                    b.Property<bool>("IsPopulated");
-
-                    b.Property<string>("Name")
-                        .HasAnnotation("MaxLength", 512);
-
-                    b.Property<float>("X");
-
-                    b.Property<float>("Y");
-
-                    b.Property<float>("Z");
-
-                    b.HasKey("PK");
-
-                    b.ToTable("Eddb_StarSystems","upload");
                 });
 
             modelBuilder.Entity("FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base.Upload_Eddb_Station", b =>
@@ -431,6 +409,29 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base.Migrations
                     b.HasKey("PK");
 
                     b.ToTable("Eddb_Stations_SellingShips","upload");
+                });
+
+            modelBuilder.Entity("FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base.Upload_Eddb_System", b =>
+                {
+                    b.Property<int>("PK")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("ID");
+
+                    b.Property<bool>("IsPopulated");
+
+                    b.Property<string>("Name")
+                        .HasAnnotation("MaxLength", 512);
+
+                    b.Property<float>("X");
+
+                    b.Property<float>("Y");
+
+                    b.Property<float>("Z");
+
+                    b.HasKey("PK");
+
+                    b.ToTable("Eddb_StarSystems","upload");
                 });
 
             modelBuilder.Entity("FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base.Eddb_Commodity", b =>

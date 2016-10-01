@@ -13,6 +13,6 @@ namespace FlexLabs.DiscordEDAssistant.Services.Integrations.Eddb
 
         public void Dispose() => _dataRepository.Dispose();
 
-        public DiscordEDAssistant.Models.External.Eddb.System GetSystem(string name) => _dataRepository.GetSystem(name);
+        public DiscordEDAssistant.Models.External.Eddb.StarSystem GetSystem(string name) => _dataRepository.GetSystem(name);
     }
 }

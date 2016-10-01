@@ -1,6 +1,6 @@
 ﻿namespace FlexLabs.DiscordEDAssistant.Models.External.Eddb
 {
-    public class System
+    public class StarSystem
     {
         public int ID { get; set; }
         public string Name { get; set; }
