@@ -18,9 +18,9 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCompact.External.Eddb
         public void ClearAll()
             => DataContext.Database.ExecuteSqlCommand("[upload].[Eddb_Truncate]");
 
-        public void UploadAll(IEnumerable<Models.External.Eddb.Module> modules)
+        public Task BulkUploadAsync(IEnumerable<Models.External.Eddb.Module> modules)
         {
-            DataContext.Upload_Eddb_Modules.AddRange(modules
+            var entities = modules
                 .Select(m => new Upload_Eddb_Module
                 {
                     ID = m.ID,
@@ -37,13 +37,13 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCompact.External.Eddb
                     GroupName = m.GroupName,
                     CategoryID = m.CategoryID,
                     CategoryName = m.CategoryName,
-                }));
-            DataContext.SaveChanges();
+                });
+            return BulkUploadEntitiesAsync(entities, "[upload].[Eddb_Modules]");
         }
 
-        public void UploadAll(IEnumerable<Models.External.Eddb.System> systems)
+        public Task BulkUploadAsync(IEnumerable<Models.External.Eddb.System> systems)
         {
-            DataContext.Upload_Eddb_Systems.AddRange(systems
+            var entities = systems
                 .Select(s => new Upload_Eddb_System
                 {
                     ID = s.ID,
@@ -52,38 +52,8 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCompact.External.Eddb
                     Y = s.Y,
                     Z = s.Z,
                     IsPopulated = s.IsPopulated,
-                }));
-            DataContext.SaveChanges();
-        }
-
-        public async Task BulkUploadSystemsAsync(IEnumerable<Models.External.Eddb.System> systems)
-        {
-            using (SqlBulkCopy copy = new SqlBulkCopy(DataContext.Database.GetDbConnection().ConnectionString)
-            {
-                BulkCopyTimeout = 300,
-                DestinationTableName = "[upload].[Eddb_Systems]",
-                BatchSize = 3000,
-            })
-            using (var table = new DataTable())
-            {
-                copy.ColumnMappings.Add(new SqlBulkCopyColumnMapping(nameof(Upload_Eddb_System.ID), nameof(Upload_Eddb_System.ID)));
-                copy.ColumnMappings.Add(new SqlBulkCopyColumnMapping(nameof(Upload_Eddb_System.Name), nameof(Upload_Eddb_System.Name)));
-                copy.ColumnMappings.Add(new SqlBulkCopyColumnMapping(nameof(Upload_Eddb_System.X), nameof(Upload_Eddb_System.X)));
-                copy.ColumnMappings.Add(new SqlBulkCopyColumnMapping(nameof(Upload_Eddb_System.Y), nameof(Upload_Eddb_System.Y)));
-                copy.ColumnMappings.Add(new SqlBulkCopyColumnMapping(nameof(Upload_Eddb_System.Z), nameof(Upload_Eddb_System.Z)));
-                copy.ColumnMappings.Add(new SqlBulkCopyColumnMapping(nameof(Upload_Eddb_System.IsPopulated), nameof(Upload_Eddb_System.IsPopulated)));
-
-                table.Columns.Add(nameof(Upload_Eddb_System.ID));
-                table.Columns.Add(nameof(Upload_Eddb_System.Name));
-                table.Columns.Add(nameof(Upload_Eddb_System.X));
-                table.Columns.Add(nameof(Upload_Eddb_System.Y));
-                table.Columns.Add(nameof(Upload_Eddb_System.Z));
-                table.Columns.Add(nameof(Upload_Eddb_System.IsPopulated));
-                foreach (var system in systems)
-                    table.Rows.Add(system.ID, system.Name, system.X, system.Y, system.Z, system.IsPopulated);
-
-                await copy.WriteToServerAsync(table);
-            }
+                });
+            return BulkUploadEntitiesAsync(entities, "[upload].[Eddb_Systems]");
         }
 
         public void MergeAll()

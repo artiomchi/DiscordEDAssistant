@@ -56,7 +56,7 @@ namespace FlexLabs.DiscordEDAssistant.Bot.Commands
                 }
 
                 var dist = Math.Sqrt(Math.Pow(sys1.X - sys2.X, 2) + Math.Pow(sys1.Y - sys2.Y, 2) + Math.Pow(sys1.Z - sys2.Z, 2));
-                await e.Channel.SendMessage($"Distance between `{sys1.Name}` and `{sys2.Name}`: `{dist.ToString("N2")} ly`");
+                await e.Channel.SendMessage($"Distance between `{sys1.Name}` and `{sys2.Name}` is: `{dist.ToString("N2")} ly`");
             }
         }
 

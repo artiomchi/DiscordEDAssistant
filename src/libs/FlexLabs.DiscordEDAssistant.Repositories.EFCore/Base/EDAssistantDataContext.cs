@@ -12,6 +12,7 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
 
         public static void Configure(IServiceCollection services, ServiceLifetime lifetime, string connectionString)
         {
+            ConnectionString = connectionString;
             services.AddDbContext<EDAssistantDataContext>(options =>
                 options.UseSqlServer(connectionString), lifetime);
         }
@@ -30,6 +31,8 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
         }
+
+        internal static string ConnectionString { get; private set; }
 
         public DbSet<Server> Servers { get; set; }
         public DbSet<Eddb_Module> Eddb_Modules { get; set; }
