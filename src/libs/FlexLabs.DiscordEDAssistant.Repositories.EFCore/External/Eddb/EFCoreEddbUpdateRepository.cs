@@ -14,7 +14,10 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCompact.External.Eddb
         { }
 
         public void ClearAll()
-            => DataContext.Database.ExecuteSqlCommand("[upload].[Eddb_Truncate]");
+        {
+            SetLongTimeout();
+            DataContext.Database.ExecuteSqlCommand("[upload].[Eddb_Truncate]");
+        }
 
         public Task BulkUploadAsync(IEnumerable<Models.External.Eddb.Commodity> modules)
         {
