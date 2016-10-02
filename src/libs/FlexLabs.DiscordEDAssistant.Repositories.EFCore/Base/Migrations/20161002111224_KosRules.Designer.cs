@@ -8,9 +8,10 @@ using FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base;
 namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base.Migrations
 {
     [DbContext(typeof(EDAssistantDataContext))]
-    partial class EDAssistantDataContextModelSnapshot : ModelSnapshot
+    [Migration("20161002111224_KosRules")]
+    partial class KosRules
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.1")
@@ -55,9 +56,6 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base.Migrations
                     b.Property<int>("CategoryID");
 
                     b.Property<byte>("Class");
-
-                    b.Property<string>("FullName")
-                        .HasAnnotation("MaxLength", 255);
 
                     b.Property<int>("GroupID");
 
@@ -326,9 +324,6 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base.Migrations
                         .HasAnnotation("MaxLength", 255);
 
                     b.Property<byte>("Class");
-
-                    b.Property<string>("FullName")
-                        .HasAnnotation("MaxLength", 255);
 
                     b.Property<int>("GroupID");
 

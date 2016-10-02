@@ -24,6 +24,7 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
 
             using (var context = new EDAssistantDataContext(optionsBuilder.Options))
             {
+                context.Database.SetCommandTimeout(300000);
                 context.Database.Migrate();
             }
         }
@@ -34,6 +35,8 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
 
         internal static string ConnectionString { get; private set; }
 
+        public DbSet<KosSimpleRule> KosSimpleRules { get; set; }
+        public DbSet<KosUserRule> KosUserRules { get; set; }
         public DbSet<Server> Servers { get; set; }
         public DbSet<Eddb_Commodity> Eddb_Commodities { get; set; }
         public DbSet<Eddb_Commodities_Category> Eddb_Commodities_Categories { get; set; }

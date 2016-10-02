@@ -1,11 +1,32 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
 {
+    public class KosSimpleRule
+    {
+        [Key]
+        public int PK { get; set; }
+        public long ServerID { get; set; }
+        public string UserName { get; set; }
+        public long AuthorID { get; set; }
+        [Required, MaxLength]
+        public string Rule { get; set; }
+    }
+
+    public class KosUserRule
+    {
+        [Key]
+        public int PK { get; set; }
+        public long ServerID { get; set; }
+        public long UserID { get; set; }
+        public long AuthorID { get; set; }
+        [Required, MaxLength]
+        public string Rule { get; set; }
+    }
+
     public class Server
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
@@ -61,6 +82,8 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
         public string Ship { get; set; }
         public int GroupID { get; set; }
         public int CategoryID { get; set; }
+        [StringLength(255)]
+        public string FullName { get; set; }
 
         [ForeignKey(nameof(CategoryID))]
         public Eddb_Modules_Category Category { get; set; }
@@ -221,6 +244,8 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
         public int CategoryID { get; set; }
         [StringLength(255)]
         public string CategoryName { get; set; }
+        [StringLength(255)]
+        public string FullName { get; set; }
     }
 
     [Table("Eddb_StarSystems", Schema = "upload")]

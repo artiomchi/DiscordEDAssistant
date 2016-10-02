@@ -55,6 +55,8 @@ namespace FlexLabs.DiscordEDAssistant.Bot
 
             commandService.CreateCommands_Time();
 
+            commandService.CreateCommands_KosRules();
+
             commandService.CreateCommands_Eddb();
 
             commandService.CreateCommands_About();

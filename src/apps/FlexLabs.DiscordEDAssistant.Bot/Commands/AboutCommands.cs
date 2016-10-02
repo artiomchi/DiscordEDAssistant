@@ -1,5 +1,6 @@
 ﻿using Discord.Commands;
 using System;
+using System.Linq;
 
 namespace FlexLabs.DiscordEDAssistant.Bot.Commands
 {
@@ -15,6 +16,7 @@ namespace FlexLabs.DiscordEDAssistant.Bot.Commands
                     var message =
         $@"```http
 Status           : OK
+Servers          : {e.Channel.Client.Servers.Count()}
 Current location : {Environment.MachineName}
 Uptime           : {DateTime.UtcNow.Subtract(Bot.Started).ToString()}
 Build            : {Program.GetVersion()}

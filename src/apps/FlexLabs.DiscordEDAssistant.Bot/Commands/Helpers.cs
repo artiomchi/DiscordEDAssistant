@@ -6,24 +6,29 @@ namespace FlexLabs.DiscordEDAssistant.Bot.Commands
 {
     public static class Helpers
     {
-        public static string FormatAsTable(string[][] data)
+        public static string FormatAsTable(string[][] data, int[] rightAlignedCols = null)
         {
             var lengths = new int[data[0].Length];
 
-            foreach (var col in lengths)
-                lengths[col] = data.Max(r => r[col].Length);
+            for (int i = 0; i < lengths.Length; i++)
+                lengths[i] = data.Max(r => r[i].Length);
 
             var sb = new StringBuilder();
             foreach (var row in data)
             {
-                for (int i = 0; i <= row.Length; i++)
+                for (int i = 0; i < row.Length; i++)
                 {
                     if (i > 0) sb.Append(" | ");
                     var value = row[i];
+                    var rightAligned = rightAlignedCols?.Contains(i) == true;
+
+                    if (rightAligned == true && value.Length < lengths[i])
+                        sb.Append(new string(' ', lengths[i] - value.Length));
                     sb.Append(value);
-                    if (value.Length < lengths[i] && i < row.Length)
-                        sb.Append(new String(' ', lengths[i] - value.Length));
+                    if (rightAligned == false && value.Length < lengths[i])
+                        sb.Append(new string(' ', lengths[i] - value.Length));
                 }
+                sb.AppendLine();
             }
 
             return sb.ToString();

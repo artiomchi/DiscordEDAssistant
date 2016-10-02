@@ -58,10 +58,11 @@ BEGIN
 			[Price] = [S].[Price],
 			[Rating] = [S].[Rating],
 			[Ship] = [S].[Ship],
-			[WeaponMode] = [S].[WeaponMode]
+			[WeaponMode] = [S].[WeaponMode],
+			[FullName] = [S].[FullName]
 	WHEN NOT MATCHED BY TARGET THEN
-		INSERT ( [ID], [CategoryID], [Class], [GroupID], [Mass], [MissileType], [Name], [Power], [Price], [Rating], [Ship], [WeaponMode] )
-		VALUES ( [ID], [CategoryID], [Class], [GroupID], [Mass], [MissileType], [Name], [Power], [Price], [Rating], [Ship], [WeaponMode] )
+		INSERT ( [ID], [CategoryID], [Class], [GroupID], [Mass], [MissileType], [Name], [Power], [Price], [Rating], [Ship], [WeaponMode], [FullName] )
+		VALUES ( [ID], [CategoryID], [Class], [GroupID], [Mass], [MissileType], [Name], [Power], [Price], [Rating], [Ship], [WeaponMode], [FullName] )
 	WHEN NOT MATCHED BY SOURCE THEN
 		DELETE;
 
