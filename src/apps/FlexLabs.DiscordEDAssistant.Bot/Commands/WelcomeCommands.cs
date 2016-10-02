@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace FlexLabs.DiscordEDAssistant.Bot.Commands
 {
@@ -48,7 +49,7 @@ namespace FlexLabs.DiscordEDAssistant.Bot.Commands
             var welcomeMessage = e.GetArg("message");
             if (string.IsNullOrWhiteSpace(welcomeMessage) || welcomeMessage == "''" || welcomeMessage == "\"\"" || welcomeMessage == "clear") welcomeMessage = null;
 
-            using (var serversService = Bot.ServiceProvider.GetService(typeof(ServersService)) as ServersService)
+            using (var serversService = Bot.ServiceProvider.GetService<ServersService>())
             {
                 serversService.SetWelcomeMessage(e.Server.Id, welcomeMessage);
             }
@@ -61,7 +62,7 @@ namespace FlexLabs.DiscordEDAssistant.Bot.Commands
 
         public static string GetServerWelcomeMessage(ulong serverID)
         {
-            using (var serversService = Bot.ServiceProvider.GetService(typeof(ServersService)) as ServersService)
+            using (var serversService = Bot.ServiceProvider.GetService<ServersService>())
             {
                 var server = serversService.Load(serverID);
                 return server?.WelcomeMessage;

@@ -4,6 +4,7 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace FlexLabs.DiscordEDAssistant.Bot.Commands
 {
@@ -40,7 +41,7 @@ namespace FlexLabs.DiscordEDAssistant.Bot.Commands
 
             await e.Channel.SendIsTyping();
 
-            using (var dataService = Bot.ServiceProvider.GetService(typeof(EddbDataService)) as EddbDataService)
+            using (var dataService = Bot.ServiceProvider.GetService<EddbDataService>())
             {
                 var sys1 = dataService.GetSystem(system1);
                 if (sys1 == null)
@@ -64,7 +65,7 @@ namespace FlexLabs.DiscordEDAssistant.Bot.Commands
         {
             var sw = Stopwatch.StartNew();
             using (var timer = new Timer(delegate { e.Channel.SendIsTyping(); }, null, 0, 3000))
-            using (var syncService = Bot.ServiceProvider.GetService(typeof(EddbSyncService)) as EddbSyncService)
+            using (var syncService = Bot.ServiceProvider.GetService<EddbSyncService>())
             {
                 await syncService.SyncAsync();
             }
@@ -76,7 +77,7 @@ namespace FlexLabs.DiscordEDAssistant.Bot.Commands
         {
             var sw = Stopwatch.StartNew();
             using (var timer = new Timer(delegate { e.Channel.SendIsTyping(); }, null, 0, 3000))
-            using (var syncService = Bot.ServiceProvider.GetService(typeof(EddbSyncService)) as EddbSyncService)
+            using (var syncService = Bot.ServiceProvider.GetService<EddbSyncService>())
             {
                 await syncService.SyncAllSystemsAsync();
             }
