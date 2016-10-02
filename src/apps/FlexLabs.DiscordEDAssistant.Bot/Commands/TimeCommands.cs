@@ -10,7 +10,7 @@ namespace FlexLabs.DiscordEDAssistant.Bot.Commands
         {
             commandService.CreateGroup("time", x =>
             {
-                x.CreateCommand("")
+                x.CreateCommand()
                     .Description("Display the in-game time (UTC)")
                     .Do(Command_Time);
 

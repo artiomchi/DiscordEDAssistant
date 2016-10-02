@@ -1,5 +1,6 @@
 ﻿using Discord.Commands;
 using FlexLabs.DiscordEDAssistant.Services.Data;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace FlexLabs.DiscordEDAssistant.Bot.Commands
 {
@@ -21,7 +22,7 @@ namespace FlexLabs.DiscordEDAssistant.Bot.Commands
                         await e.Channel.SendMessage("Command prefix is too long");
                     }
 
-                    using (var serversService = Bot.ServiceProvider.GetService(typeof(ServersService)) as ServersService)
+                    using (var serversService = Bot.ServiceProvider.GetService<ServersService>())
                     {
                         serversService.SetCommandPrefix(e.Server.Id, prefix);
                     }

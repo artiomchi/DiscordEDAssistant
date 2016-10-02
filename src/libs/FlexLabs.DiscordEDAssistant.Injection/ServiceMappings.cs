@@ -20,10 +20,12 @@ namespace FlexLabs.DiscordEDAssistant.Injection
         {
             services.AddTransient<IEddbDataRepository, EFCoreEddbDataRepository>();
             services.AddTransient<IEddbUpdateRepository, EFCoreEddbUpdateRepository>();
+            services.AddTransient<IKosRulesRepository, EFCoreKosRulesRepository>();
             services.AddTransient<IServersRepository, EFCoreServersRepository>();
 
             services.AddTransient<EddbDataService>();
             services.AddTransient<EddbSyncService>();
+            services.AddTransient<KosRulesService>();
             services.AddTransient<ServersService>();
         }
     }

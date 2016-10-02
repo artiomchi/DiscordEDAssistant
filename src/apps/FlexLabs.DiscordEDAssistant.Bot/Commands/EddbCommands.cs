@@ -4,6 +4,10 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Generic;
+using System.Linq;
+using FlexLabs.DiscordEDAssistant.Base.Extensions;
 
 namespace FlexLabs.DiscordEDAssistant.Bot.Commands
 {
@@ -16,6 +20,12 @@ namespace FlexLabs.DiscordEDAssistant.Bot.Commands
                 .Parameter("system1")
                 .Parameter("system2")
                 .Do(Command_Dist);
+
+            commandService.CreateCommand("modules near")
+                .Description("Find modules closest to the current system")
+                .Parameter("system")
+                .Parameter("module", ParameterType.Multiple)
+                .Do(Commands_ModulesNear);
 
             commandService.CreateGroup("eddb", x =>
             {
@@ -38,9 +48,8 @@ namespace FlexLabs.DiscordEDAssistant.Bot.Commands
             var system1 = e.GetArg("system1").Trim(',');
             var system2 = e.GetArg("system2");
 
-            await e.Channel.SendIsTyping();
-
-            using (var dataService = Bot.ServiceProvider.GetService(typeof(EddbDataService)) as EddbDataService)
+            using (var timer = new Timer(delegate { e.Channel.SendIsTyping(); }, null, 0, 3000))
+            using (var dataService = Bot.ServiceProvider.GetService<EddbDataService>())
             {
                 var sys1 = dataService.GetSystem(system1);
                 if (sys1 == null)
@@ -60,11 +69,63 @@ namespace FlexLabs.DiscordEDAssistant.Bot.Commands
             }
         }
 
+        private static async Task Commands_ModulesNear(CommandEventArgs e)
+        {
+            var systemName = e.GetArg("system");
+
+            using (var timer = new Timer(delegate { e.Channel.SendIsTyping(); }, null, 0, 3000))
+            using (var dataService = Bot.ServiceProvider.GetService<EddbDataService>())
+            {
+                var starSystem = dataService.GetSystem(systemName);
+                if (starSystem == null)
+                {
+                    await e.Channel.SendMessage($"Unknown system: `{systemName}`");
+                    return;
+                }
+
+                var moduleIDs = new List<int>();
+                foreach (var arg in e.Args.Skip(1))
+                {
+                    var moduleID = dataService.FindModuleID(arg);
+                    if (moduleID == null)
+                    {
+                        await e.Channel.SendMessage($"Unknown module: `{arg}`");
+                        return;
+                    }
+                    moduleIDs.Add(moduleID.Value);
+                }
+
+                var stations = (await dataService.FindClosestStationsWithModulesAsync(starSystem, moduleIDs)).ToList();
+                if (stations.Count == 0)
+                {
+                    await e.Channel.SendMessage("Nobosy seems to have it");
+                    return;
+                }
+
+                var headings = new[] { new[] { "System", "Distance", "Station", "Pad", "Plan", "Dst to star", "Updated" } };
+                var data = stations.Select(s => new[]
+                {
+                    s.SystemName,
+                    s.DistanceToSystem.ToString("N2") + " ly",
+                    s.Name,
+                    s.MaxLandingPadSize?.ToString(),
+                    s.IsPlanetary ? "*" : "",
+                    s.DistanceToStar.HasValue ? s.DistanceToStar.Value.ToString("N0") + " ls" : "?",
+                    s.MarketUpdatedAt.HasValue ? DateTime.UtcNow.Subtract(s.MarketUpdatedAt.Value).ToFriendlyString() : "-",
+                });
+                var rightAligned = new[] { 1, 5, 6 };
+                await e.Channel.SendMessage($@"Closest stations with the desired modules:
+```
+{Helpers.FormatAsTable(headings.Concat(data).ToArray(), rightAligned)}
+```");
+            }
+        }
+
         private static async Task Command_Eddb_Sync(CommandEventArgs e)
         {
             var sw = Stopwatch.StartNew();
             using (var timer = new Timer(delegate { e.Channel.SendIsTyping(); }, null, 0, 3000))
-            using (var syncService = Bot.ServiceProvider.GetService(typeof(EddbSyncService)) as EddbSyncService)
+            using (var syncService = Bot.ServiceProvider.GetService<EddbSyncService>())
             {
                 await syncService.SyncAsync();
             }
@@ -76,7 +137,7 @@ namespace FlexLabs.DiscordEDAssistant.Bot.Commands
         {
             var sw = Stopwatch.StartNew();
             using (var timer = new Timer(delegate { e.Channel.SendIsTyping(); }, null, 0, 3000))
-            using (var syncService = Bot.ServiceProvider.GetService(typeof(EddbSyncService)) as EddbSyncService)
+            using (var syncService = Bot.ServiceProvider.GetService<EddbSyncService>())
             {
                 await syncService.SyncAllSystemsAsync();
             }

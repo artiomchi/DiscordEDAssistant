@@ -50,6 +50,7 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCompact.External.Eddb
                     GroupName = m.GroupName,
                     CategoryID = m.CategoryID,
                     CategoryName = m.CategoryName,
+                    FullName = m.Class.ToString() + m.Rating + " " + m.GroupName,
                 });
             return BulkUploadEntitiesAsync(entities, "[upload].[Eddb_Modules]");
         }

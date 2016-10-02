@@ -35,5 +35,8 @@ namespace FlexLabs.DiscordEDAssistant.Models.External.Eddb
         public string[] ExportCommodities { get; set; }
         public string[] ProhibitedCommodities { get; set; }
         public string[] Economies { get; set; }
+
+        public string SystemName;
+        public float DistanceToSystem;
     }
 }
