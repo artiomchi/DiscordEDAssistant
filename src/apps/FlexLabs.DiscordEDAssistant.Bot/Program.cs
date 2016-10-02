@@ -9,7 +9,7 @@ namespace FlexLabs.DiscordEDAssistant.Bot
 {
     public class Program
     {
-        public static void Main() => new Program().Start();
+        public static void Main(string[] args) => new Program().Start(args);
 
         public static string GetVersion()
         {
@@ -26,7 +26,7 @@ namespace FlexLabs.DiscordEDAssistant.Bot
             return assembly.GetName().Version.AsDateTime();
         }
 
-        public void Start()
+        public void Start(string[] args)
         {
             var configBuilder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
@@ -51,8 +51,21 @@ namespace FlexLabs.DiscordEDAssistant.Bot
 
             ServiceMappings.InitDatabase(dbConnectionString);
 
-            var bot = new Bot(serviceProvider);
-            bot.Start(botToken, config["Discord.Bot.ClientID"]);
+
+
+            switch (args?.Length > 0 ? args[0] : null)
+            {
+                case "eddb.sync":
+                    using (var syncService = Bot.ServiceProvider.GetService<Services.Integrations.Eddb.EddbSyncService>())
+                    {
+                        syncService.SyncAsync().Wait();
+                    }
+                    break;
+                default:
+                    var bot = new Bot(serviceProvider);
+                    bot.Start(botToken, config["Discord.Bot.ClientID"]);
+                    break;
+            }
         }
     }
 }

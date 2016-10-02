@@ -24,7 +24,7 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
 
             using (var context = new EDAssistantDataContext(optionsBuilder.Options))
             {
-                context.Database.SetCommandTimeout(300000);
+                context.Database.SetCommandTimeout(30000000);
                 context.Database.Migrate();
             }
         }

@@ -16,11 +16,11 @@ namespace FlexLabs.DiscordEDAssistant.Bot.Commands
                     var message =
         $@"```http
 Status           : OK
-Servers          : {e.Channel.Client.Servers.Count()}
-Current location : {Environment.MachineName}
+Servers Joined   : {e.Channel.Client.Servers.Count()}
+Current Location : {Environment.MachineName}
 Uptime           : {DateTime.UtcNow.Subtract(Bot.Started).ToString()}
 Build            : {Program.GetVersion()}
-Build time       : {Program.GetBuildTime()}
+Build Time       : {Program.GetBuildTime()}
 ```";
                     if (Bot.ClientID != null)
                         message += $@"
