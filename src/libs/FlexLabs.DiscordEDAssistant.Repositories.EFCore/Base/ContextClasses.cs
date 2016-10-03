@@ -42,7 +42,7 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int ID { get; set; }
-        [StringLength(255)]
+        [Required, StringLength(100), Column(TypeName = "varchar(100)")]
         public string Name { get; set; }
         public int AveragePrice { get; set; }
         public bool IsRare { get; set; }
@@ -57,7 +57,7 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int ID { get; set; }
-        [StringLength(255)]
+        [Required, StringLength(100), Column(TypeName = "varchar(100)")]
         public string Name { get; set; }
 
         [InverseProperty(nameof(Eddb_Commodity.Category))]
@@ -69,7 +69,7 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int ID { get; set; }
-        [StringLength(255)]
+        [StringLength(100), Column(TypeName = "varchar(100)")]
         public string Name { get; set; }
         public int? Price { get; set; }
         public byte Class { get; set; }
@@ -78,11 +78,11 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
         public byte? MissileType { get; set; }
         public float Mass { get; set; }
         public float Power { get; set; }
-        [StringLength(255)]
+        [StringLength(100), Column(TypeName = "varchar(100)")]
         public string Ship { get; set; }
         public int GroupID { get; set; }
         public int CategoryID { get; set; }
-        [StringLength(255)]
+        [Required, StringLength(100), Column(TypeName = "varchar(100)")]
         public string FullName { get; set; }
 
         [ForeignKey(nameof(CategoryID))]
@@ -96,7 +96,7 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int ID { get; set; }
-        [StringLength(255)]
+        [Required, StringLength(100), Column(TypeName = "varchar(100)")]
         public string Name { get; set; }
 
         [InverseProperty(nameof(Eddb_Module.Category))]
@@ -108,7 +108,7 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int ID { get; set; }
-        [StringLength(255)]
+        [Required, StringLength(100), Column(TypeName = "varchar(100)")]
         public string Name { get; set; }
 
         [InverseProperty(nameof(Eddb_Module.Group))]
@@ -120,18 +120,18 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int ID { get; set; }
-        [StringLength(255)]
+        [Required, StringLength(100), Column(TypeName = "varchar(100)")]
         public string Name { get; set; }
         public int SystemID { get; set; }
         public byte? MaxLandingPadSize { get; set; }
         public int? DistanceToStar { get; set; }
-        [StringLength(255)]
+        [StringLength(100), Column(TypeName = "varchar(100)")]
         public string Faction { get; set; }
-        [StringLength(255)]
+        [StringLength(100), Column(TypeName = "varchar(100)")]
         public string Government { get; set; }
-        [StringLength(255)]
+        [StringLength(100), Column(TypeName = "varchar(100)")]
         public string Allegiance { get; set; }
-        [StringLength(255)]
+        [StringLength(100), Column(TypeName = "varchar(100)")]
         public string State { get; set; }
         public int? TypeID { get; set; }
         public bool HasBlackmarket { get; set; }
@@ -175,7 +175,7 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
         [Key]
         public int PK { get; set; }
         public int StationID { get; set; }
-        [StringLength(255)]
+        [Required, StringLength(100), Column(TypeName = "varchar(100)")]
         public string Ship { get; set; }
 
         [ForeignKey(nameof(StationID))]
@@ -187,7 +187,7 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int ID { get; set; }
-        [StringLength(255)]
+        [Required, StringLength(100), Column(TypeName = "varchar(100)")]
         public string Name { get; set; }
 
         [InverseProperty(nameof(Eddb_Station.Type))]
@@ -199,7 +199,7 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int ID { get; set; }
-        [StringLength(512)]
+        [Required, StringLength(100), Column(TypeName = "varchar(100)")]
         public string Name { get; set; }
         public float X { get; set; }
         public float Y { get; set; }
@@ -213,12 +213,12 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
         [Key]
         public int PK { get; set; }
         public int ID { get; set; }
-        [StringLength(255)]
+        [Required, StringLength(100), Column(TypeName = "varchar(100)")]
         public string Name { get; set; }
         public int AveragePrice { get; set; }
         public bool IsRare { get; set; }
         public int CategoryID { get; set; }
-        [StringLength(255)]
+        [StringLength(100), Column(TypeName = "varchar(100)")]
         public string CategoryName { get; set; }
     }
 
@@ -228,7 +228,7 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
         [Key]
         public int PK { get; set; }
         public int ID { get; set; }
-        [StringLength(255)]
+        [StringLength(100), Column(TypeName = "varchar(100)")]
         public string Name { get; set; }
         public int? Price { get; set; }
         public byte Class { get; set; }
@@ -239,12 +239,12 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
         public float Power { get; set; }
         public string Ship { get; set; }
         public int GroupID { get; set; }
-        [StringLength(255)]
+        [StringLength(100), Column(TypeName = "varchar(100)")]
         public string GroupName { get; set; }
         public int CategoryID { get; set; }
-        [StringLength(255)]
+        [StringLength(100), Column(TypeName = "varchar(100)")]
         public string CategoryName { get; set; }
-        [StringLength(255)]
+        [Required, StringLength(100), Column(TypeName = "varchar(100)")]
         public string FullName { get; set; }
     }
 
@@ -254,7 +254,7 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
         [Key]
         public int PK { get; set; }
         public int ID { get; set; }
-        [StringLength(512)]
+        [Required, StringLength(100), Column(TypeName = "varchar(100)")]
         public string Name { get; set; }
         public float X { get; set; }
         public float Y { get; set; }
@@ -268,21 +268,21 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
         [Key]
         public int PK { get; set; }
         public int ID { get; set; }
-        [StringLength(512)]
+        [Required, StringLength(100), Column(TypeName = "varchar(100)")]
         public string Name { get; set; }
         public int SystemID { get; set; }
         public byte? MaxLandingPadSize { get; set; }
         public int? DistanceToStar { get; set; }
-        [StringLength(512)]
+        [StringLength(100), Column(TypeName = "varchar(100)")]
         public string Faction { get; set; }
-        [StringLength(512)]
+        [StringLength(100), Column(TypeName = "varchar(100)")]
         public string Government { get; set; }
-        [StringLength(512)]
+        [StringLength(100), Column(TypeName = "varchar(100)")]
         public string Allegiance { get; set; }
-        [StringLength(512)]
+        [StringLength(100), Column(TypeName = "varchar(100)")]
         public string State { get; set; }
         public int? TypeID { get; set; }
-        [StringLength(512)]
+        [StringLength(100), Column(TypeName = "varchar(100)")]
         public string TypeName { get; set; }
         public bool HasBlackmarket { get; set; }
         public bool HasMarket { get; set; }
@@ -298,9 +298,9 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
         public DateTime? OutfittingUpdatedAt { get; set; }
         public DateTime? MarketUpdatedAt { get; set; }
         public bool IsPlanetary { get; set; }
-        [MaxLength]
+        [MaxLength, Column(TypeName = "varchar(max)")]
         public string SellingModulesJson { get; set; }
-        [MaxLength]
+        [MaxLength, Column(TypeName = "varchar(max)")]
         public string SellingShipsJson { get; set; }
     }
 }
