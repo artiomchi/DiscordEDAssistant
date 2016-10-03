@@ -1,4 +1,5 @@
 ﻿using FlexLabs.DiscordEDAssistant.Base.Extensions;
+using Newtonsoft.Json;
 
 namespace FlexLabs.DiscordEDAssistant.Services.Integrations.Eddb.Models
 {
@@ -70,6 +71,8 @@ namespace FlexLabs.DiscordEDAssistant.Services.Integrations.Eddb.Models
                 ExportCommodities = export_commodities,
                 ProhibitedCommodities = prohibited_commodities,
                 Economies = economies,
+                SellingModulesJson = JsonConvert.SerializeObject(selling_modules),
+                SellingShipsJson = JsonConvert.SerializeObject(selling_ships),
             };
     }
 }

@@ -8,9 +8,10 @@ using FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base;
 namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base.Migrations
 {
     [DbContext(typeof(EDAssistantDataContext))]
-    partial class EDAssistantDataContextModelSnapshot : ModelSnapshot
+    [Migration("20161003102315_StationSellingModulesJson")]
+    partial class StationSellingModulesJson
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.1")
@@ -450,6 +451,35 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base.Migrations
                     b.HasKey("PK");
 
                     b.ToTable("Eddb_Stations","upload");
+                });
+
+            modelBuilder.Entity("FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base.Upload_Eddb_Stations_SellingModule", b =>
+                {
+                    b.Property<int>("PK")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("ModuleID");
+
+                    b.Property<int>("StationID");
+
+                    b.HasKey("PK");
+
+                    b.ToTable("Eddb_Stations_SellingModules","upload");
+                });
+
+            modelBuilder.Entity("FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base.Upload_Eddb_Stations_SellingShip", b =>
+                {
+                    b.Property<int>("PK")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Ship")
+                        .HasAnnotation("MaxLength", 255);
+
+                    b.Property<int>("StationID");
+
+                    b.HasKey("PK");
+
+                    b.ToTable("Eddb_Stations_SellingShips","upload");
                 });
 
             modelBuilder.Entity("FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base.Eddb_Commodity", b =>

@@ -63,7 +63,14 @@ BEGIN
 		DELETE;
 
     MERGE [eddb].[Stations_SellingModules] AS [T]
-	USING [upload].[Eddb_Stations_SellingModules] AS [S]
+	USING (
+		SELECT [S].[ID] AS [StationID], [X].[value] AS [ModuleID]
+		FROM [upload].[Eddb_Stations] AS [S]
+		CROSS APPLY (
+			SELECT [value]
+			FROM OPENJSON([S].[SellingModulesJson])
+		) AS [X]
+	) AS [S]
 	ON [T].[StationID] = [S].[StationID] AND [T].[ModuleID] = [S].[ModuleID]
 	WHEN NOT MATCHED BY TARGET THEN
 		INSERT ( [StationID], [ModuleID] )
@@ -72,7 +79,14 @@ BEGIN
 		DELETE;
 
     MERGE [eddb].[Stations_SellingShips] AS [T]
-	USING [upload].[Eddb_Stations_SellingShips] AS [S]
+	USING (
+		SELECT [S].[ID] AS [StationID], [X].[value] AS [Ship]
+		FROM [upload].[Eddb_Stations] AS [S]
+		CROSS APPLY (
+			SELECT [value]
+			FROM OPENJSON([S].[SellingShipsJson])
+		) AS [X]
+	) AS [S]
 	ON [T].[StationID] = [S].[StationID] AND [T].[Ship] = [S].[Ship]
 	WHEN NOT MATCHED BY TARGET THEN
 		INSERT ( [StationID], [Ship] )

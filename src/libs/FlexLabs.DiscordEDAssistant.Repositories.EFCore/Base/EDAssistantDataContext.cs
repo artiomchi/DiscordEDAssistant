@@ -52,7 +52,5 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
         public DbSet<Upload_Eddb_Module> Upload_Eddb_Modules { get; set; }
         public DbSet<Upload_Eddb_StarSystem> Upload_Eddb_StarSystems { get; set; }
         public DbSet<Upload_Eddb_Station> Upload_Eddb_Stations { get; set; }
-        public DbSet<Upload_Eddb_Stations_SellingModule> Upload_Eddb_Stations_SellingModules { get; set; }
-        public DbSet<Upload_Eddb_Stations_SellingShip> Upload_Eddb_Stations_SellingShips { get; set; }
     }
 }

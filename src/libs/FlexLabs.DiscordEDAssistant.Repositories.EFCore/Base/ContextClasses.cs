@@ -298,24 +298,9 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
         public DateTime? OutfittingUpdatedAt { get; set; }
         public DateTime? MarketUpdatedAt { get; set; }
         public bool IsPlanetary { get; set; }
-    }
-
-    [Table("Eddb_Stations_SellingModules", Schema = "upload")]
-    public class Upload_Eddb_Stations_SellingModule
-    {
-        [Key]
-        public int PK { get; set; }
-        public int StationID { get; set; }
-        public int ModuleID { get; set; }
-    }
-
-    [Table("Eddb_Stations_SellingShips", Schema = "upload")]
-    public class Upload_Eddb_Stations_SellingShip
-    {
-        [Key]
-        public int PK { get; set; }
-        public int StationID { get; set; }
-        [StringLength(255)]
-        public string Ship { get; set; }
+        [MaxLength]
+        public string SellingModulesJson { get; set; }
+        [MaxLength]
+        public string SellingShipsJson { get; set; }
     }
 }
