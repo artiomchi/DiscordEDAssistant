@@ -103,32 +103,10 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCompact.External.Eddb
                     OutfittingUpdatedAt = s.OutfittingUpdatedAt,
                     MarketUpdatedAt = s.MarketUpdatedAt,
                     IsPlanetary = s.IsPlanetary,
+                    SellingModulesJson = s.SellingModulesJson,
+                    SellingShipsJson = s.SellingShipsJson,
                 });
             return BulkUploadEntitiesAsync(entities, "[upload].[Eddb_Stations]");
-        }
-
-        public Task BulkUploadStationModulesAsync(IEnumerable<Models.External.Eddb.Station> stations)
-        {
-            var entities = stations
-                .SelectMany(s => s.SellingModules
-                    .Select(sm => new Upload_Eddb_Stations_SellingModule
-                    {
-                        StationID = s.ID,
-                        ModuleID = sm
-                    }));
-            return BulkUploadEntitiesAsync(entities, "[upload].[Eddb_Stations_SellingModules]");
-        }
-
-        public Task BulkUploadStationShipsAsync(IEnumerable<Models.External.Eddb.Station> stations)
-        {
-            var entities = stations
-                .SelectMany(s => s.SellingShips
-                    .Select(ss => new Upload_Eddb_Stations_SellingShip
-                    {
-                        StationID = s.ID,
-                        Ship = ss
-                    }));
-            return BulkUploadEntitiesAsync(entities, "[upload].[Eddb_Stations_SellingShips]");
         }
 
         public void MergeAll()

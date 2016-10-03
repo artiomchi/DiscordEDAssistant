@@ -56,7 +56,7 @@ namespace FlexLabs.DiscordEDAssistant.Bot
             switch (args?.Length > 0 ? args[0] : null)
             {
                 case "eddb.sync":
-                    using (var syncService = Bot.ServiceProvider.GetService<Services.Integrations.Eddb.EddbSyncService>())
+                    using (var syncService = serviceProvider.GetService<Services.Integrations.Eddb.EddbSyncService>())
                     {
                         syncService.SyncAsync().Wait();
                     }
