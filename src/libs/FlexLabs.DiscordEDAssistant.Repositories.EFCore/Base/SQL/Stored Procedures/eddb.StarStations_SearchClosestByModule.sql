@@ -13,7 +13,8 @@ BEGIN
 			SQRT(POWER([SS].[X] - @X, 2) + POWER([SS].[Y] - @Y, 2) + POWER([SS].[Z] - @Z, 2)) AS [DistanceToSystem]
 		FROM [eddb].[Stations] AS [S]
 		JOIN [eddb].[StarSystems] AS [SS] ON [S].[SystemID] = [SS].[ID]
-		WHERE (
+		WHERE [SS].[IsPopulated] = 1
+		AND (
 			SELECT COUNT(0)
 			FROM [eddb].[Stations_SellingModules] AS [SM]
 			JOIN @ModuleIDs AS [MI] ON [SM].[ModuleID] = [MI].[ID]
