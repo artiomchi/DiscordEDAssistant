@@ -5,6 +5,8 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
 {
     public class EDAssistantDataContext : DbContext
     {
+        internal const int LongTimeoutMs = 30000000;
+
         public EDAssistantDataContext(DbContextOptions options)
             : base(options)
         {
@@ -24,7 +26,7 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
 
             using (var context = new EDAssistantDataContext(optionsBuilder.Options))
             {
-                context.Database.SetCommandTimeout(30000000);
+                context.Database.SetCommandTimeout(LongTimeoutMs);
                 context.Database.Migrate();
             }
         }

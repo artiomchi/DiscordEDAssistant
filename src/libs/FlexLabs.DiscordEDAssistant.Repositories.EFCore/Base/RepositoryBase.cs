@@ -28,7 +28,7 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
 
         public DateTime GetDate() => DateTime.UtcNow;
 
-        public void SetLongTimeout() => DataContext.Database.SetCommandTimeout(300000);
+        public void SetLongTimeout() => DataContext.Database.SetCommandTimeout(EDAssistantDataContext.LongTimeoutMs);
 
         protected long ConvertID(ulong id)
         {
@@ -50,7 +50,7 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
         {
             using (var copy = new SqlBulkCopy(SqlConnection, SqlBulkCopyOptions.TableLock | SqlBulkCopyOptions.UseInternalTransaction, null)
             {
-                BulkCopyTimeout = 300,
+                BulkCopyTimeout = EDAssistantDataContext.LongTimeoutMs / 1000,
                 DestinationTableName = tableName,
                 EnableStreaming = true,
             })
