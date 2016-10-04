@@ -28,7 +28,7 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
 
         public DateTime GetDate() => DateTime.UtcNow;
 
-        public void SetLongTimeout() => DataContext.Database.SetCommandTimeout(300000);
+        public void SetLongTimeout() => DataContext.Database.SetCommandTimeout(EDAssistantDataContext.LongTimeoutMs);
 
         protected long ConvertID(ulong id)
         {
@@ -46,13 +46,15 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
             return Convert.ToUInt64(-id) + long.MaxValue;
         }
 
-        protected async Task BulkUploadEntitiesAsync<TEntity>(IEnumerable<TEntity> entities, string tableName)
+        protected async Task BulkUploadEntitiesAsync<TEntity>(string tableName, IEnumerable<TEntity> entities)
         {
-            using (var copy = new SqlBulkCopy(SqlConnection, SqlBulkCopyOptions.TableLock | SqlBulkCopyOptions.UseInternalTransaction, null)
+            using (var conn = new SqlConnection(EDAssistantDataContext.ConnectionString))
+            using (var copy = new SqlBulkCopy(conn, SqlBulkCopyOptions.TableLock | SqlBulkCopyOptions.UseInternalTransaction, null)
             {
-                BulkCopyTimeout = 300,
+                BulkCopyTimeout = EDAssistantDataContext.LongTimeoutMs / 1000,
                 DestinationTableName = tableName,
                 EnableStreaming = true,
+                BatchSize = 10000,
             })
             {
                 var source = entities.AsDataReader();
@@ -62,8 +64,8 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
                     copy.ColumnMappings.Add(new SqlBulkCopyColumnMapping(columnName, columnName));
                 }
 
-                if (SqlConnection.State != ConnectionState.Open)
-                    await SqlConnection.OpenAsync();
+                if (conn.State != ConnectionState.Open)
+                    await conn.OpenAsync();
                 await copy.WriteToServerAsync(source);
             }
         }

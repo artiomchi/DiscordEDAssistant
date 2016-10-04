@@ -303,4 +303,23 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
         [MaxLength, Column(TypeName = "varchar(max)")]
         public string SellingShipsJson { get; set; }
     }
+
+    [Table("Eddb_Stations_SellingModules", Schema = "upload")]
+    public class Upload_Eddb_Stations_SellingModule
+    {
+        [Key]
+        public int PK { get; set; }
+        public int StationID { get; set; }
+        public int ModuleID { get; set; }
+    }
+
+    [Table("Eddb_Stations_SellingShips", Schema = "upload")]
+    public class Upload_Eddb_Stations_SellingShip
+    {
+        [Key]
+        public int PK { get; set; }
+        public int StationID { get; set; }
+        [Required, StringLength(100), Column(TypeName = "varchar(100)")]
+        public string Ship { get; set; }
+    }
 }

@@ -5,6 +5,8 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
 {
     public class EDAssistantDataContext : DbContext
     {
+        internal const int LongTimeoutMs = 30000000;
+
         public EDAssistantDataContext(DbContextOptions options)
             : base(options)
         {
@@ -24,7 +26,7 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
 
             using (var context = new EDAssistantDataContext(optionsBuilder.Options))
             {
-                context.Database.SetCommandTimeout(30000000);
+                context.Database.SetCommandTimeout(LongTimeoutMs);
                 context.Database.Migrate();
             }
         }
@@ -52,5 +54,7 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
         public DbSet<Upload_Eddb_Module> Upload_Eddb_Modules { get; set; }
         public DbSet<Upload_Eddb_StarSystem> Upload_Eddb_StarSystems { get; set; }
         public DbSet<Upload_Eddb_Station> Upload_Eddb_Stations { get; set; }
+        public DbSet<Upload_Eddb_Stations_SellingModule> Upload_Eddb_Stations_SellingModules { get; set; }
+        public DbSet<Upload_Eddb_Stations_SellingShip> Upload_Eddb_Stations_SellingShips { get; set; }
     }
 }

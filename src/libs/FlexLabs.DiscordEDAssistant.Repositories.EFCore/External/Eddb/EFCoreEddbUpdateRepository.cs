@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using System;
 
 namespace FlexLabs.DiscordEDAssistant.Repositories.EFCompact.External.Eddb
 {
@@ -31,7 +32,7 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCompact.External.Eddb
                     CategoryID = c.CategoryID,
                     CategoryName = c.CategoryName,
                 });
-            return BulkUploadEntitiesAsync(entities, "[upload].[Eddb_Commodities]");
+            return BulkUploadEntitiesAsync("[upload].[Eddb_Commodities]", entities);
         }
 
         public Task BulkUploadAsync(IEnumerable<Models.External.Eddb.Module> modules)
@@ -55,7 +56,7 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCompact.External.Eddb
                     CategoryName = m.CategoryName,
                     FullName = m.Class.ToString() + m.Rating + " " + (m.Name ?? m.GroupName),
                 });
-            return BulkUploadEntitiesAsync(entities, "[upload].[Eddb_Modules]");
+            return BulkUploadEntitiesAsync("[upload].[Eddb_Modules]", entities);
         }
 
         public Task BulkUploadAsync(IEnumerable<Models.External.Eddb.StarSystem> systems)
@@ -70,7 +71,7 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCompact.External.Eddb
                     Z = s.Z,
                     IsPopulated = s.IsPopulated,
                 });
-            return BulkUploadEntitiesAsync(entities, "[upload].[Eddb_StarSystems]");
+            return BulkUploadEntitiesAsync("[upload].[Eddb_StarSystems]", entities);
         }
 
         public Task BulkUploadAsync(IEnumerable<Models.External.Eddb.Station> stations)
@@ -106,7 +107,27 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCompact.External.Eddb
                     SellingModulesJson = s.SellingModulesJson,
                     SellingShipsJson = s.SellingShipsJson,
                 });
-            return BulkUploadEntitiesAsync(entities, "[upload].[Eddb_Stations]");
+            return BulkUploadEntitiesAsync("[upload].[Eddb_Stations]", entities);
+        }
+
+        public Task BulkUploadStationModulesAsync(IEnumerable<Tuple<int, int>> enumerable)
+        {
+            return BulkUploadEntitiesAsync("[upload].[Eddb_Stations_SellingModules]",
+                enumerable.Select(t => new Upload_Eddb_Stations_SellingModule
+                {
+                    StationID = t.Item1,
+                    ModuleID = t.Item2,
+                }));
+        }
+
+        public Task BulkUploadStationShipsAsync(IEnumerable<Tuple<int, string>> enumerable)
+        {
+            return BulkUploadEntitiesAsync("[upload].[Eddb_Stations_SellingShips]",
+                enumerable.Select(t => new Upload_Eddb_Stations_SellingShip
+                {
+                    StationID = t.Item1,
+                    Ship = t.Item2,
+                }));
         }
 
         public void MergeAll()
