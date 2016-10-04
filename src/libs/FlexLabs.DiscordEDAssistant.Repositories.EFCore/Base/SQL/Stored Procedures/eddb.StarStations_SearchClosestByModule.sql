@@ -7,19 +7,23 @@
 AS
 BEGIN
 
-	SELECT TOP (@Take) [ID], [Name], [DistanceToStar], [MaxLandingPadSize], [IsPlanetary], [MarketUpdatedAt], [SystemID], [SystemName], [DistanceToSystem]
+	DECLARE @ModuleCount AS INT = (SELECT COUNT(0) FROM @ModuleIDs)
+
+	SELECT TOP (@Take)
+		[S].[ID], [S].[Name], [S].[DistanceToStar], [S].[MaxLandingPadSize], [S].[IsPlanetary], [S].[MarketUpdatedAt],
+		[SS].[ID] AS [SystemID], [SS].[Name] AS [SystemName], SQRT(POWER([SS].[X], 2) + POWER([SS].[Y], 2) + POWER([SS].[Z], 2)) AS [DistanceToSystem]
 	FROM (
-		SELECT [S].[ID], [S].[Name], [S].[DistanceToStar], [S].[MaxLandingPadSize], [S].[IsPlanetary], [S].[MarketUpdatedAt], [SS].[ID] AS [SystemID], [SS].[Name] AS [SystemName],
-			SQRT(POWER([SS].[X] - @X, 2) + POWER([SS].[Y] - @Y, 2) + POWER([SS].[Z] - @Z, 2)) AS [DistanceToSystem]
+		SELECT [S].[ID]
 		FROM [eddb].[Stations] AS [S]
-		JOIN [eddb].[StarSystems] AS [SS] ON [S].[SystemID] = [SS].[ID]
-		WHERE [SS].[IsPopulated] = 1
-		AND (
+		WHERE (
 			SELECT COUNT(0)
 			FROM [eddb].[Stations_SellingModules] AS [SM]
 			JOIN @ModuleIDs AS [MI] ON [SM].[ModuleID] = [MI].[ID]
-			WHERE [SM].[StationID] = [S].[ID]) = (SELECT COUNT(0) FROM @ModuleIDs)
+			WHERE [SM].[StationID] = [S].[ID]) = @ModuleCount
 	) AS [X]
+	JOIN [eddb].[Stations] AS [S] ON [X].[ID] = [S].[ID]
+	JOIN [eddb].[StarSystems] AS [SS] ON [S].[SystemID] = [SS].[ID]
+	WHERE [SS].[IsPopulated] = 1
 	ORDER BY [DistanceToSystem]
 
 END

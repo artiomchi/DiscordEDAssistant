@@ -76,7 +76,41 @@ namespace FlexLabs.DiscordEDAssistant.Services.Integrations.Eddb
                 systems => _updateRepository.BulkUploadAsync(systems.Select(s => s.Translate())));
 
             await StreamProcessEntitiesAsync<Models.Station>("stations.json",
-                stations => _updateRepository.BulkUploadAsync(stations.Select(s => s.Translate())));
+                async stations =>
+                {
+                    using (var stationsQueue = new BlockingCollection<DiscordEDAssistant.Models.External.Eddb.Station>())
+                    using (var stationModulesQueue = new BlockingCollection<Tuple<int, int>>(40000))
+                    using (var stationShipsQueue = new BlockingCollection<Tuple<int, string>>(40000))
+                    {
+                        var stationsTask = Task.Run(() => _updateRepository.BulkUploadAsync(stationsQueue.GetConsumingEnumerable()));
+                        var modulesTask = Task.Run(() => _updateRepository.BulkUploadStationModulesAsync(stationModulesQueue.GetConsumingEnumerable()));
+                        var shipsTask = Task.Run(() => _updateRepository.BulkUploadStationShipsAsync(stationShipsQueue.GetConsumingEnumerable()));
+
+                        try
+                        {
+                            foreach (var station in stations.Select(s => s.Translate()))
+                            {
+                                stationsQueue.Add(station);
+                                if (station.SellingModules?.Length > 0)
+                                    foreach (var moduleID in station.SellingModules)
+                                        stationModulesQueue.Add(new Tuple<int, int>(station.ID, moduleID));
+                                if (station.SellingShips?.Length > 0)
+                                    foreach (var ship in station.SellingShips)
+                                        stationShipsQueue.Add(new Tuple<int, string>(station.ID, ship));
+                            }
+                        }
+                        finally
+                        {
+                            stationsQueue.CompleteAdding();
+                            stationModulesQueue.CompleteAdding();
+                            stationShipsQueue.CompleteAdding();
+
+                            await stationsTask;
+                            await modulesTask;
+                            await shipsTask;
+                        }
+                    }
+                });
 
             _updateRepository.MergeAll();
 
