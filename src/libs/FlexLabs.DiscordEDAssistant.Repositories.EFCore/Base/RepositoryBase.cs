@@ -53,6 +53,7 @@ namespace FlexLabs.DiscordEDAssistant.Repositories.EFCore.Base
                 BulkCopyTimeout = EDAssistantDataContext.LongTimeoutMs / 1000,
                 DestinationTableName = tableName,
                 EnableStreaming = true,
+                BatchSize = 10000,
             })
             {
                 var source = entities.AsDataReader();
