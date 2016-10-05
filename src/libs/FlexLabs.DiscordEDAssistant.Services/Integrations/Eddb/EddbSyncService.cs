@@ -4,6 +4,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -22,24 +23,30 @@ namespace FlexLabs.DiscordEDAssistant.Services.Integrations.Eddb
 
         private async Task<bool> StreamProcessEntitiesAsync<TEntity>(string fileName, Func<IEnumerable<TEntity>, Task> action)
         {
-            var queue = new BlockingCollection<TEntity>(5000);
+            var tmpFileName = Path.GetTempFileName();
+            try
             {
-                var process = Task.Run(async () =>
+                using (var handler = new HttpClientHandler { AutomaticDecompression = System.Net.DecompressionMethods.GZip | System.Net.DecompressionMethods.Deflate })
+                using (var client = new HttpClient(handler) { Timeout = TimeSpan.FromHours(6) })
+                using (var file = File.OpenWrite(tmpFileName))
+                using (var gStream = new GZipStream(file, CompressionMode.Compress))
                 {
-                    await action(queue.GetConsumingEnumerable());
-                });
+                    var response = await client.GetAsync("https://eddb.io/archive/v4/" + fileName, HttpCompletionOption.ResponseHeadersRead);
+                    if (!response.IsSuccessStatusCode)
+                        return false;
 
-                try
+                    await response.Content.CopyToAsync(gStream);
+                }
+
+                var queue = new BlockingCollection<TEntity>(5000);
                 {
-                    using (var handler = new HttpClientHandler { AutomaticDecompression = System.Net.DecompressionMethods.GZip | System.Net.DecompressionMethods.Deflate })
-                    using (var client = new HttpClient(handler) { Timeout = TimeSpan.FromHours(6) })
+                    var process = Task.Run(() => action(queue.GetConsumingEnumerable()));
+
+                    try
                     {
-                        var response = await client.GetAsync("https://eddb.io/archive/v4/" + fileName, HttpCompletionOption.ResponseHeadersRead);
-                        if (!response.IsSuccessStatusCode)
-                            return false;
-
                         var serializer = new JsonSerializer();
-                        using (var stream = await response.Content.ReadAsStreamAsync())
+                        using (var file = File.OpenRead(tmpFileName))
+                        using (var stream = new GZipStream(file, CompressionMode.Decompress))
                         using (var tReader = new StreamReader(stream))
                         using (var reader = new JsonTextReader(tReader))
                         {
@@ -52,14 +59,19 @@ namespace FlexLabs.DiscordEDAssistant.Services.Integrations.Eddb
                             }
                         }
                     }
+                    finally
+                    {
+                        queue.CompleteAdding();
+                        await process;
+                    }
                 }
-                finally
-                {
-                    queue.CompleteAdding();
-                    await process;
-                }
+                return true;
             }
-            return true;
+            finally
+            {
+                if (File.Exists(tmpFileName))
+                    File.Delete(tmpFileName);
+            }
         }
 
         public async Task<bool> SyncAsync()
