@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FlexLabs.DiscordEDAssistant.Base.Extensions;
 using FlexLabs.DiscordEDAssistant.Bot.Extensions;
+using Discord;
 
 namespace FlexLabs.DiscordEDAssistant.Bot.Commands
 {
@@ -20,13 +21,13 @@ namespace FlexLabs.DiscordEDAssistant.Bot.Commands
                 .Description("Calculate distance between two systems")
                 .Parameter("system1")
                 .Parameter("system2")
-                .Do(Command_Dist);
+                .Do(e => Command_Dist(e.Channel, e.GetArg("system1").Trim(','), e.GetArg("system2")));
 
             commandService.CreateCommand("modules near")
                 .Description("Find modules closest to the current system")
                 .Parameter("system")
                 .Parameter("module", ParameterType.Multiple)
-                .Do(Commands_ModulesNear);
+                .Do(e => Commands_ModulesNear(e.Channel, e.GetArg("system"), e.Args.Skip(1).ToArray()));
 
             commandService.CreateGroup("eddb", x =>
             {
@@ -46,53 +47,48 @@ namespace FlexLabs.DiscordEDAssistant.Bot.Commands
             });
         }
 
-        private static async Task Command_Dist(CommandEventArgs e)
+        public static async Task Command_Dist(Channel channel, string system1, string system2)
         {
-            var system1 = e.GetArg("system1").Trim(',');
-            var system2 = e.GetArg("system2");
-
-            using (var timer = new Timer(delegate { e.Channel.SendIsTyping(); }, null, 0, 3000))
+            using (var timer = new Timer(delegate {channel.SendIsTyping(); }, null, 0, 3000))
             using (var dataService = Bot.ServiceProvider.GetService<EddbDataService>())
             {
                 var sys1 = dataService.GetSystem(system1);
                 if (sys1 == null)
                 {
-                    await e.Channel.SendMessage($"Unknown system: `{system1}`");
+                    await channel.SendMessage($"Unknown system: `{system1}`");
                     return;
                 }
                 var sys2 = dataService.GetSystem(system2);
                 if (sys2 == null)
                 {
-                    await e.Channel.SendMessage($"Unknown system: `{system2}`");
+                    await channel.SendMessage($"Unknown system: `{system2}`");
                     return;
                 }
 
                 var dist = Math.Sqrt(Math.Pow(sys1.X - sys2.X, 2) + Math.Pow(sys1.Y - sys2.Y, 2) + Math.Pow(sys1.Z - sys2.Z, 2));
-                await e.Channel.SendMessage($"Distance between `{sys1.Name}` and `{sys2.Name}` is: `{dist.ToString("N2")} ly`");
+                await channel.SendMessage($"Distance between `{sys1.Name}` and `{sys2.Name}` is: `{dist.ToString("N2")} ly`");
             }
         }
 
-        private static async Task Commands_ModulesNear(CommandEventArgs e)
+        public static async Task Commands_ModulesNear(Channel channel, string systemName, string[] modules)
         {
-            var systemName = e.GetArg("system");
-
-            using (var timer = new Timer(delegate { e.Channel.SendIsTyping(); }, null, 0, 3000))
+            using (var timer = new Timer(delegate { channel.SendIsTyping(); }, null, 0, 3000))
             using (var dataService = Bot.ServiceProvider.GetService<EddbDataService>())
             {
                 var starSystem = dataService.GetSystem(systemName);
                 if (starSystem == null)
                 {
-                    await e.Channel.SendMessage($"Unknown system: `{systemName}`");
+                    await channel.SendMessage($"Unknown system: `{systemName}`");
                     return;
                 }
 
                 var moduleIDs = new List<int>();
-                foreach (var arg in e.Args.Skip(1))
+                foreach (var arg in modules)
                 {
                     var moduleID = dataService.FindModuleID(arg);
                     if (moduleID == null)
                     {
-                        await e.Channel.SendMessage($"Unknown module: `{arg}`");
+                        await channel.SendMessage($"Unknown module: `{arg}`");
                         return;
                     }
                     moduleIDs.Add(moduleID.Value);
@@ -101,7 +97,7 @@ namespace FlexLabs.DiscordEDAssistant.Bot.Commands
                 var stations = (await dataService.FindClosestStationsWithModulesAsync(starSystem, moduleIDs)).ToList();
                 if (stations.Count == 0)
                 {
-                    await e.Channel.SendMessage("Nobosy seems to have it");
+                    await channel.SendMessage("Nobosy seems to have it");
                     return;
                 }
 
@@ -117,7 +113,7 @@ namespace FlexLabs.DiscordEDAssistant.Bot.Commands
                     s.MarketUpdatedAt.HasValue ? DateTime.UtcNow.Subtract(s.MarketUpdatedAt.Value).ToFriendlyString() : "-",
                 });
                 var rightAligned = new[] { 1, 5, 6 };
-                await e.Channel.SendMessage($@"Closest stations with the desired modules:
+                await channel.SendMessage($@"Closest stations to `{starSystem.Name}` with that sell `{String.Join("`, `", modules)}`:
 ```
 {Helpers.FormatAsTable(headings.Concat(data).ToArray(), rightAligned)}
 ```");

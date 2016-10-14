@@ -1,4 +1,5 @@
-﻿using Discord.Commands;
+﻿using Discord;
+using Discord.Commands;
 using System;
 using System.Threading.Tasks;
 
@@ -12,37 +13,36 @@ namespace FlexLabs.DiscordEDAssistant.Bot.Commands
             {
                 x.CreateCommand()
                     .Description("Display the in-game time (UTC)")
-                    .Do(Command_Time);
+                    .Do(e => Command_Time(e.Channel));
 
                 x.CreateCommand("in")
                     .Description("Convert in-game time to local time")
                     .Parameter("timezone", ParameterType.Required)
                     .Parameter("time", ParameterType.Optional)
-                    .Do(Command_TimeIn);
+                    .Do(e => Command_TimeIn(e.Channel, e.GetArg("timezone"), e.GetArg("time")));
             });
         }
 
-        private static Task Command_Time(CommandEventArgs e)
-            => e.Channel.SendMessage($"Current in-game time: `{FormatTime(DateTime.UtcNow)}` (UTC)");
+        public static Task Command_Time(Channel channel)
+            => channel.SendMessage($"Current in-game time: `{FormatTime(DateTime.UtcNow)}` (UTC)");
 
-        private static async Task Command_TimeIn(CommandEventArgs e)
+        public static async Task Command_TimeIn(Channel channel, string timeZoneName, string timeStr)
         {
-            var timeZoneName = e.GetArg("timezone");
             var timeZone = GetTimeZone(timeZoneName);
             if (timeZone == null)
             {
-                await e.Channel.SendMessage("Could not understand the time zone name");
+                await channel.SendMessage("Could not understand the time zone name");
                 return;
             }
 
             DateTime time;
             var customTime = false;
-            if (!string.IsNullOrWhiteSpace(e.GetArg("time")))
+            if (!string.IsNullOrWhiteSpace(timeStr))
             {
                 customTime = true;
-                if (!DateTime.TryParse(e.GetArg("time"), out time))
+                if (!DateTime.TryParse(timeStr, out time))
                 {
-                    await e.Channel.SendMessage("Could not understand the time");
+                    await channel.SendMessage("Could not understand the time");
                     return;
                 }
             }
@@ -53,9 +53,9 @@ namespace FlexLabs.DiscordEDAssistant.Bot.Commands
 
             var newTime = TimeZoneInfo.ConvertTimeFromUtc(time, timeZone);
             if (customTime)
-                await e.Channel.SendMessage($"The time in `{timeZoneName}` at `{FormatTime(time)}` UTC will be `{FormatTime(newTime)}`");
+                await channel.SendMessage($"The time in `{timeZoneName}` at `{FormatTime(time)}` UTC will be `{FormatTime(newTime)}`");
             else
-                await e.Channel.SendMessage($"The time in `{timeZoneName}` is `{FormatTime(newTime)}`");
+                await channel.SendMessage($"The time in `{timeZoneName}` is `{FormatTime(newTime)}`");
         }
 
         private static String FormatTime(DateTime time) => time.ToString("HH:mm:ss");

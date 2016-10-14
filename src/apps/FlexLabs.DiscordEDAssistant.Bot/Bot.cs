@@ -42,6 +42,13 @@ namespace FlexLabs.DiscordEDAssistant.Bot
 
                     return prefix.Length;
                 };
+                x.ErrorHandler = async (s, e) =>
+                {
+                    var message = e.Message.RawText
+                        .Replace(_client.CurrentUser.Mention, "")
+                        .Replace(_client.CurrentUser.NicknameMention, "");
+                    await Luis.LuisProcessor.Process(e.Channel, message);
+                };
             });
 
             var commandService = _client.GetService<CommandService>();
