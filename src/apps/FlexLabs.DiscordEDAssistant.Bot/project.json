@@ -17,6 +17,7 @@
     "FlexLabs.DiscordEDAssistant.Injection": "0.7.0-*",
     "FlexLabs.DiscordEDAssistant.Models": "0.7.0-*",
     "FlexLabs.DiscordEDAssistant.Services": "0.7.0-*",
+    "HtmlAgilityPack": "1.4.9.5",
     "Microsoft.EntityFrameworkCore.Design": {
       "version": "1.0.0-preview2-final",
       "type": "build"

@@ -59,6 +59,8 @@ namespace FlexLabs.DiscordEDAssistant.Bot
 
             commandService.CreateCommands_Eddb();
 
+            commandService.CreateCommands_Inara();
+
             commandService.CreateCommands_About();
         }
 

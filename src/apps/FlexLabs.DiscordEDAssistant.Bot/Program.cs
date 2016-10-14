@@ -26,6 +26,7 @@ namespace FlexLabs.DiscordEDAssistant.Bot
             return assembly.GetName().Version.AsDateTime();
         }
 
+        public static IConfigurationRoot Config { get; private set; }
         public void Start(string[] args)
         {
             var configBuilder = new ConfigurationBuilder()
@@ -33,16 +34,16 @@ namespace FlexLabs.DiscordEDAssistant.Bot
             if (System.Diagnostics.Debugger.IsAttached)
                 configBuilder.AddUserSecrets("aspnet-FlexLabs.DiscordEDAssistant-20160929030746");
             configBuilder.AddEnvironmentVariables();
-            var config = configBuilder.Build();
+            Config = configBuilder.Build();
 
-            var botToken = config.GetConnectionString("Discord.Bot.Token");
+            var botToken = Config.GetConnectionString("Discord.Bot.Token");
             if (botToken == null)
             {
                 Console.WriteLine("Bot auth token missing!");
                 return;
             }
 
-            var dbConnectionString = config.GetConnectionString("DefaultConnection");
+            var dbConnectionString = Config.GetConnectionString("DefaultConnection");
 
             var services = new ServiceCollection();
             ServiceMappings.ConfigureDatabase(services, dbConnectionString);
@@ -63,7 +64,7 @@ namespace FlexLabs.DiscordEDAssistant.Bot
                     break;
                 default:
                     var bot = new Bot(serviceProvider);
-                    bot.Start(botToken, config["Discord.Bot.ClientID"]);
+                    bot.Start(botToken, Config["Discord.Bot.ClientID"]);
                     break;
             }
         }

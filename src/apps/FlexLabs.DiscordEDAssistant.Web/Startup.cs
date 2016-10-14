@@ -49,10 +49,10 @@ namespace FlexLabs.DiscordEDAssistant.Web
 
             app.Run(async (context) =>
             {
-                using (var handler = new HttpClientHandler { Credentials = new NetworkCredential(Configuration["Heartbeat.Login"], Configuration["Heartbeat.Password"])})
+                using (var handler = new HttpClientHandler { Credentials = new NetworkCredential(Configuration["Heartbeat:Login"], Configuration["Heartbeat:Password"])})
                 using (var client = new HttpClient(handler))
                 {
-                    var result = await client.GetAsync(Configuration["Heartbeat.Url"]);
+                    var result = await client.GetAsync(Configuration["Heartbeat:Url"]);
                 }
 
                 await context.Response.WriteAsync("Hello World!");
