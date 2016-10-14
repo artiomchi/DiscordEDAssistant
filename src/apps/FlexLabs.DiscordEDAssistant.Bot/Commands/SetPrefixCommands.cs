@@ -1,4 +1,5 @@
 ﻿using Discord.Commands;
+using FlexLabs.DiscordEDAssistant.Bot.Extensions;
 using FlexLabs.DiscordEDAssistant.Services.Data;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -13,6 +14,7 @@ namespace FlexLabs.DiscordEDAssistant.Bot.Commands
                 .Parameter("prefix", ParameterType.Optional)
                 .AddCheck(Bot.Check_PublicChannel)
                 .AddCheck(Bot.Check_IsServerAdmin)
+                .ModCommand()
                 .Do(async e =>
                 {
                     var prefix = e.GetArg("prefix");

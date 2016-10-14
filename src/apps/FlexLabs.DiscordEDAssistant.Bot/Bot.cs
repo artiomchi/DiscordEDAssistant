@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Commands;
 using FlexLabs.DiscordEDAssistant.Bot.Commands;
+using FlexLabs.DiscordEDAssistant.Bot.Extensions;
 using FlexLabs.DiscordEDAssistant.Services.Data;
 using System;
 using System.Collections.Generic;
@@ -96,12 +97,13 @@ namespace FlexLabs.DiscordEDAssistant.Bot
 
         private async Task Command_Help(CommandEventArgs e)
         {
-            var pub = e.Args?.Length > 0 && e.Args.Any(a => String.Equals("here", a, StringComparison.OrdinalIgnoreCase));
             var all = (e.Channel.IsPrivate || e.User.ServerPermissions.Administrator) && e.Args?.Length > 0 && e.Args.Any(a => String.Equals("all", a, StringComparison.OrdinalIgnoreCase));
+            var reveal = e.Channel.IsPrivate && e.Args?.Length > 0 && e.Args.Any(a => String.Equals("reveal", a, StringComparison.OrdinalIgnoreCase));
 
             var commandService = _client.GetService<CommandService>();
             var commands = commandService.AllCommands.OfType<Command>()
-                .Where(c => all || !c.IsHidden)
+                .Where(c => reveal || !c.IsHidden)
+                .Where(c => all || !c.IsModCommand())
                 .Where(c =>
                 {
                     var method = typeof(Command).GetMethod("CanRun", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
@@ -132,7 +134,9 @@ namespace FlexLabs.DiscordEDAssistant.Bot
 
             var prefix = e.Server != null ? GetServerPrefix(e.Server.Id) : null;
             var message = new StringBuilder();
-            message.AppendLine($"Available commands for {e.Server?.Name ?? "direct messages"}:");
+            message.AppendLine(!e.Channel.IsPrivate && e.User.ServerPermissions.Administrator && !all
+                ? $"Popular commands for {e.Server?.Name ?? "direct messages"} (to see mod commands run `{prefix} help all`):"
+                : $"Available commands for {e.Server?.Name ?? "direct messages"}:");
             message.AppendLine("```http");
             foreach (var command in commandsHelp)
             {
@@ -141,15 +145,7 @@ namespace FlexLabs.DiscordEDAssistant.Bot
             }
             message.AppendLine("```");
 
-            if (e.Channel.IsPrivate || pub)
-            {
-                await e.Channel.SendMessage(message.ToString());
-            }
-            else
-            {
-                await e.User.SendMessage(message.ToString());
-                await e.Channel.SendMessage($"{e.User.Mention} Bot instructions have been sent to you as a Direct Message");
-            }
+            await e.Channel.SendMessage(message.ToString());
         }
     }
 }

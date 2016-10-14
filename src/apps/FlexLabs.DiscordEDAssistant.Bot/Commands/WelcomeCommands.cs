@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using FlexLabs.DiscordEDAssistant.Bot.Extensions;
 
 namespace FlexLabs.DiscordEDAssistant.Bot.Commands
 {
@@ -17,6 +18,7 @@ namespace FlexLabs.DiscordEDAssistant.Bot.Commands
                 .Description("Display the current welcome message")
                 .AddCheck(Bot.Check_PublicChannel)
                 .AddCheck(Bot.Check_IsServerAdmin)
+                .ModCommand()
                 .Do(Command_Welcome);
 
             commandService.CreateCommand("welcome")
@@ -24,6 +26,7 @@ namespace FlexLabs.DiscordEDAssistant.Bot.Commands
                 .Parameter("message", ParameterType.Unparsed)
                 .AddCheck(Bot.Check_PublicChannel)
                 .AddCheck(Bot.Check_IsServerAdmin)
+                .ModCommand()
                 .Do(Command_Welcome_Set);
 
             client.UserJoined += (s, e) =>

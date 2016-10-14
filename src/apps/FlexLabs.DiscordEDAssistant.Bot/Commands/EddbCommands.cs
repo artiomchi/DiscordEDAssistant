@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System.Linq;
 using FlexLabs.DiscordEDAssistant.Base.Extensions;
+using FlexLabs.DiscordEDAssistant.Bot.Extensions;
 
 namespace FlexLabs.DiscordEDAssistant.Bot.Commands
 {
@@ -31,12 +32,14 @@ namespace FlexLabs.DiscordEDAssistant.Bot.Commands
             {
                 x.CreateCommand("sync")
                     .Hide()
+                    .ModCommand()
                     .Description("Sync the core data from EDDB")
                     .AddCheck(Bot.Check_IsServerAdmin)
                     .Do(Command_Eddb_Sync);
 
                 x.CreateCommand("sync allsystems")
                     .Hide()
+                    .ModCommand()
                     .Description("Sync the full system list from EDDB")
                     .AddCheck(Bot.Check_IsServerAdmin)
                     .Do(Command_Eddb_Sync_AllSystems);
