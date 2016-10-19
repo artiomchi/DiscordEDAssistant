@@ -7,7 +7,7 @@
   <Import Project="$(VSToolsPath)\DotNet\Microsoft.DotNet.Props" Condition="'$(VSToolsPath)' != ''" />
   <PropertyGroup Label="Globals">
     <ProjectGuid>ba4a420b-f8bf-4176-8363-88d475458c44</ProjectGuid>
-    <RootNamespace>FlexLabs.DiscordEDAssistant.Repositories.EFCore</RootNamespace>
+    <RootNamespace>FlexLabs.EDAssistant.Repositories.EFCore</RootNamespace>
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">.\obj</BaseIntermediateOutputPath>
     <OutputPath Condition="'$(OutputPath)'=='' ">.\bin\</OutputPath>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
