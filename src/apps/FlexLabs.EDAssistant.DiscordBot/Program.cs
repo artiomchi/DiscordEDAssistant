@@ -5,7 +5,7 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using FlexLabs.EDAssistant.Injection;
 
-namespace FlexLabs.EDAssistant.Bot
+namespace FlexLabs.EDAssistant.DiscordBot
 {
     public class Program
     {

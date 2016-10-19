@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Discord;
 
-namespace FlexLabs.EDAssistant.Bot.Luis
+namespace FlexLabs.EDAssistant.DiscordBot.Luis
 {
     public static class LuisProcessor
     {

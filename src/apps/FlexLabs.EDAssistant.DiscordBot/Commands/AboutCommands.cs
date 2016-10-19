@@ -2,7 +2,7 @@
 using System;
 using System.Linq;
 
-namespace FlexLabs.EDAssistant.Bot.Commands
+namespace FlexLabs.EDAssistant.DiscordBot.Commands
 {
     public static class AboutCommands
     {

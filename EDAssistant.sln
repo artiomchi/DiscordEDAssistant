@@ -16,7 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "libs", "libs", "{7E5CBF39-E
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "FlexLabs.EDAssistant.Base", "src\libs\FlexLabs.EDAssistant.Base\FlexLabs.EDAssistant.Base.xproj", "{F7A2D18A-A133-467B-BAF0-92A5EFF3E734}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "FlexLabs.EDAssistant.Bot", "src\apps\FlexLabs.EDAssistant.Bot\FlexLabs.EDAssistant.Bot.xproj", "{BC4B36B2-62F0-4361-A85D-B6D5EF61DD62}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "FlexLabs.EDAssistant.DiscordBot", "src\apps\FlexLabs.EDAssistant.DiscordBot\FlexLabs.EDAssistant.DiscordBot.xproj", "{BC4B36B2-62F0-4361-A85D-B6D5EF61DD62}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "FlexLabs.EDAssistant.Web", "src\apps\FlexLabs.EDAssistant.Web\FlexLabs.EDAssistant.Web.xproj", "{18991A55-9B4A-4298-9EBE-BE14E07E350A}"
 EndProject

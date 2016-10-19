@@ -1,7 +1,7 @@
 ﻿using Discord;
 using Discord.Commands;
-using FlexLabs.EDAssistant.Bot.Commands;
-using FlexLabs.EDAssistant.Bot.Extensions;
+using FlexLabs.EDAssistant.DiscordBot.Commands;
+using FlexLabs.EDAssistant.DiscordBot.Extensions;
 using FlexLabs.EDAssistant.Services.Data;
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FlexLabs.EDAssistant.Bot
+namespace FlexLabs.EDAssistant.DiscordBot
 {
     public class Bot
     {

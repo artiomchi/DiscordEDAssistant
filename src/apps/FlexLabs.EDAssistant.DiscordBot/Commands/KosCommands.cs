@@ -2,7 +2,7 @@
 using FlexLabs.EDAssistant.Services.Data;
 using System.Threading.Tasks;
 
-namespace FlexLabs.EDAssistant.Bot.Commands
+namespace FlexLabs.EDAssistant.DiscordBot.Commands
 {
     public static class KosCommands
     {

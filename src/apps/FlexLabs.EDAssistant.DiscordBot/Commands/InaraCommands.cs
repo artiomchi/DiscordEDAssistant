@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace FlexLabs.EDAssistant.Bot.Commands
+namespace FlexLabs.EDAssistant.DiscordBot.Commands
 {
     public static class InaraCommands
     {

@@ -1,4 +1,4 @@
-﻿namespace FlexLabs.EDAssistant.Bot.Luis
+﻿namespace FlexLabs.EDAssistant.DiscordBot.Luis
 {
     public class LuisResponse
     {

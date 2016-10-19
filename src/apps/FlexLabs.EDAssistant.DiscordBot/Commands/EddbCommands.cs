@@ -8,10 +8,10 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System.Linq;
 using FlexLabs.EDAssistant.Base.Extensions;
-using FlexLabs.EDAssistant.Bot.Extensions;
+using FlexLabs.EDAssistant.DiscordBot.Extensions;
 using Discord;
 
-namespace FlexLabs.EDAssistant.Bot.Commands
+namespace FlexLabs.EDAssistant.DiscordBot.Commands
 {
     public static class EddbCommands
     {

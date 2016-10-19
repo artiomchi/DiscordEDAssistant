@@ -6,9 +6,9 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using FlexLabs.EDAssistant.Bot.Extensions;
+using FlexLabs.EDAssistant.DiscordBot.Extensions;
 
-namespace FlexLabs.EDAssistant.Bot.Commands
+namespace FlexLabs.EDAssistant.DiscordBot.Commands
 {
     public static class WelcomeCommands
     {

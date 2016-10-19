@@ -1,9 +1,9 @@
 ﻿using Discord.Commands;
-using FlexLabs.EDAssistant.Bot.Extensions;
+using FlexLabs.EDAssistant.DiscordBot.Extensions;
 using FlexLabs.EDAssistant.Services.Data;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace FlexLabs.EDAssistant.Bot.Commands
+namespace FlexLabs.EDAssistant.DiscordBot.Commands
 {
     public static class SetPrefixCommands
     {
