@@ -2,9 +2,11 @@
   "version": "0.7.0-alpha-*",
 
   "dependencies": {
-    "FlexLabs.EDAssistant.Base": "0.7.0-alpha-*",
+    "FlexLabs.EDAssistant.Base": "0.7.0-*",
     "FlexLabs.EDAssistant.Models": "0.7.0-*",
     "FlexLabs.EDAssistant.Repositories": "0.7.0-*",
+    "HtmlAgilityPack": "1.4.9.5",
+    "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
     "NETStandard.Library": "1.6.0",
     "Newtonsoft.Json": "9.0.1"
   },

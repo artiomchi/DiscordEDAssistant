@@ -1,9 +1,10 @@
 ﻿using FlexLabs.EDAssistant.Base.Extensions;
+using FlexLabs.EDAssistant.Injection;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using System;
 using System.Reflection;
-using Microsoft.Extensions.DependencyInjection;
-using FlexLabs.EDAssistant.Injection;
 
 namespace FlexLabs.EDAssistant.DiscordBot
 {
@@ -26,7 +27,6 @@ namespace FlexLabs.EDAssistant.DiscordBot
             return assembly.GetName().Version.AsDateTime();
         }
 
-        public static IConfigurationRoot Config { get; private set; }
         public void Start(string[] args)
         {
             var configBuilder = new ConfigurationBuilder()
@@ -34,25 +34,24 @@ namespace FlexLabs.EDAssistant.DiscordBot
             if (System.Diagnostics.Debugger.IsAttached)
                 configBuilder.AddUserSecrets("aspnet-FlexLabs.EDAssistant-20160929030746");
             configBuilder.AddEnvironmentVariables();
-            Config = configBuilder.Build();
+            var config = configBuilder.Build();
 
-            var botToken = Config["Discord:Bot.Token"];
-            if (botToken == null)
+            var dbConnectionString = config.GetConnectionString("DefaultConnection");
+            var services = new ServiceCollection();
+            services.AddOptions();
+            services.Configure<Models.Settings>(config);
+            ServiceMappings.ConfigureDatabase(services, dbConnectionString);
+            ServiceMappings.ConfigureServices(services);
+            var serviceProvider = services.BuildServiceProvider();
+            ServiceMappings.InitDatabase(dbConnectionString);
+
+            var settings = serviceProvider.GetService<IOptions<Models.Settings>>().Value;
+
+            if (settings.Discord.AuthToken == null)
             {
                 Console.WriteLine("Bot auth token missing!");
                 return;
             }
-
-            var dbConnectionString = Config.GetConnectionString("DefaultConnection");
-
-            var services = new ServiceCollection();
-            ServiceMappings.ConfigureDatabase(services, dbConnectionString);
-            ServiceMappings.ConfigureServices(services);
-            var serviceProvider = services.BuildServiceProvider();
-
-            ServiceMappings.InitDatabase(dbConnectionString);
-
-
 
             switch (args?.Length > 0 ? args[0] : null)
             {
@@ -64,7 +63,7 @@ namespace FlexLabs.EDAssistant.DiscordBot
                     break;
                 default:
                     var bot = new Bot(serviceProvider);
-                    bot.Start(botToken, Config["Discord:Bot.ClientID"]);
+                    bot.Start();
                     break;
             }
         }

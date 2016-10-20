@@ -12,8 +12,8 @@ namespace FlexLabs.EDAssistant.DiscordBot.Commands
 {
     public static class InaraCommands
     {
-        private static String InaraLogin => Program.Config["Inara:Login"];
-        private static String InaraPass => Program.Config["Inara:Password"];
+        private static String InaraLogin => Models.Settings.Instance.Inara.Login;
+        private static String InaraPass => Models.Settings.Instance.Inara.Password;
 
         public static void CreateCommands_Inara(this CommandService commandService)
         {

@@ -1,11 +1,16 @@
-﻿{
+{
   "version": "0.7.0-alpha-*",
   "userSecretsId": "aspnet-FlexLabs.EDAssistant-20160929030746",
   "dependencies": {
+    "FlexLabs.EDAssistant.Base": "0.7.0-*",
+    "FlexLabs.EDAssistant.Injection": "0.7.0-*",
+    "FlexLabs.EDAssistant.Models": "0.7.0-*",
+    "FlexLabs.EDAssistant.Services": "0.7.0-*",
     "Microsoft.AspNetCore.Diagnostics": "1.0.0",
     "Microsoft.AspNetCore.Mvc": "1.0.0",
     "Microsoft.AspNetCore.Server.IISIntegration": "1.0.0",
     "Microsoft.AspNetCore.Server.Kestrel": "1.0.0",
+    "Microsoft.Bot.Builder": "3.2.1",
     "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0",
     "Microsoft.Extensions.Configuration.FileExtensions": "1.0.0",
     "Microsoft.Extensions.Configuration.Json": "1.0.0",
@@ -21,7 +26,11 @@
   },
 
   "frameworks": {
-    "net46": { }
+    "net46": {
+      "frameworkAssemblies": {
+        "System.Configuration": "4.0.0.0"
+      }
+    }
   },
 
   "buildOptions": {

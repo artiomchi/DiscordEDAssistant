@@ -16,7 +16,6 @@ namespace FlexLabs.EDAssistant.DiscordBot
         private DiscordClient _client;
 
         public static IServiceProvider ServiceProvider { get; private set; }
-        public static string ClientID { get; private set; }
         public static DateTime Started { get; private set; }
         public static Dictionary<ulong, string> ServerPrefixes { get; } = new Dictionary<ulong, string>();
 
@@ -72,13 +71,12 @@ namespace FlexLabs.EDAssistant.DiscordBot
             commandService.CreateCommands_About();
         }
 
-        public void Start(string botToken, string clientID)
+        public void Start()
         {
-            ClientID = clientID;
             Started = DateTime.UtcNow;
             _client.ExecuteAndWait(async () =>
             {
-                await _client.Connect(botToken, TokenType.Bot);
+                await _client.Connect(Models.Settings.Instance.Discord.AuthToken, TokenType.Bot);
             });
         }
 

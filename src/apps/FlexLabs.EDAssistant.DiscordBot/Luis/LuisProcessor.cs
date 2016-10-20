@@ -9,8 +9,8 @@ namespace FlexLabs.EDAssistant.DiscordBot.Luis
 {
     public static class LuisProcessor
     {
-        private static string AppID => Program.Config["Luis:AppID"];
-        private static string SubKey => Program.Config["Luis:SubscriptionKey"];
+        private static string AppID => Models.Settings.Instance.Luis.AppId;
+        private static string SubKey => Models.Settings.Instance.Luis.SubscriptionKey;
 
         public static async Task Process(Channel channel, string message)
         {

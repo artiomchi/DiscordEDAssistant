@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using FlexLabs.EDAssistant.Injection;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System;
 
 namespace FlexLabs.EDAssistant.Web
 {
@@ -33,12 +35,19 @@ namespace FlexLabs.EDAssistant.Web
         // For more information on how to configure your application, visit http://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddOptions();
+            services.Configure<Models.Settings>(Configuration);
+
+            var dbConnectionString = Configuration.GetConnectionString("DefaultConnection");
+            ServiceMappings.ConfigureDatabase(services, dbConnectionString);
+            ServiceMappings.ConfigureServices(services);
+
             // Add framework services.
             services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IServiceProvider serviceProvider)
         {
             if (env.IsDevelopment())
             {
@@ -47,6 +56,17 @@ namespace FlexLabs.EDAssistant.Web
 
                 app.UseDeveloperExceptionPage();
             }
+            else
+            {
+                // Setting the Microsoft Bot Framework credentials
+                var appSettings = System.Configuration.ConfigurationManager.AppSettings;
+                appSettings["BotId"] = Configuration["BotFramework:BotId"];
+                appSettings["MicrosoftAppId"] = Configuration["BotFramework:MicrosoftAppId"];
+                appSettings["MicrosoftAppPassword"] = Configuration["BotFramework:MicrosoftAppPassword"];
+            }
+
+            var dbConnectionString = Configuration.GetConnectionString("DefaultConnection");
+            ServiceMappings.InitDatabase(dbConnectionString);
 
             app.UseMvc();
 
