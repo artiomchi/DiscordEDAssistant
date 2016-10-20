@@ -5,14 +5,16 @@ namespace FlexLabs.EDAssistant.Services.Commands
 {
     public class CommandTableContent : ICommandContent
     {
-        public CommandTableContent(string[][] cells, int[] rightAlignedCells = null)
+        public CommandTableContent(string[][] cells, int[] rightAlignedCells = null, char separator = '|')
         {
             Cells = cells;
             RightAlignedCells = rightAlignedCells;
+            Separator = separator;
         }
 
         public string[][] Cells { get; }
         public int[] RightAlignedCells { get; }
+        public char Separator { get; }
 
         public string Format(string channel)
         {
@@ -26,7 +28,7 @@ namespace FlexLabs.EDAssistant.Services.Commands
             {
                 for (int i = 0; i < row.Length; i++)
                 {
-                    if (i > 0) sb.Append(" | ");
+                    if (i > 0) sb.Append($" {Separator} ");
                     var value = row[i];
                     var rightAligned = RightAlignedCells?.Contains(i) == true;
 

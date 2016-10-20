@@ -6,7 +6,7 @@ namespace FlexLabs.EDAssistant.DiscordBot.Commands
 {
     public static class Helpers
     {
-        public static string FormatAsTable(string[][] data, int[] rightAlignedCols = null)
+        public static string FormatAsTable(string[][] data, int[] rightAlignedCols = null, char separator = '|')
         {
             var lengths = new int[data[0].Length];
 
@@ -18,7 +18,7 @@ namespace FlexLabs.EDAssistant.DiscordBot.Commands
             {
                 for (int i = 0; i < row.Length; i++)
                 {
-                    if (i > 0) sb.Append(" | ");
+                    if (i > 0) sb.Append($" {separator} ");
                     var value = row[i];
                     var rightAligned = rightAlignedCols?.Contains(i) == true;
 

@@ -81,8 +81,8 @@ namespace FlexLabs.EDAssistant.DiscordBot.Commands
                     }
 
                     await e.Channel.SendMessage($@"CMDR `{cmdrName}`:
-```
-{Helpers.FormatAsTable(cells.ToArray())}
+```http
+{Helpers.FormatAsTable(cells.ToArray(), separator: ':')}
 ```");
                 }
             }
