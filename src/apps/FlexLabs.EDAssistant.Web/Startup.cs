@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 
 namespace FlexLabs.EDAssistant.Web
@@ -25,7 +26,7 @@ namespace FlexLabs.EDAssistant.Web
                 builder.AddUserSecrets();
             }
 
-            builder.AddEnvironmentVariables();
+            builder.AddEnvironmentVariables(Models.Settings.EnvironmentPrefix);
             Configuration = builder.Build();
         }
 
@@ -59,10 +60,11 @@ namespace FlexLabs.EDAssistant.Web
             else
             {
                 // Setting the Microsoft Bot Framework credentials
+                var botFrameworkSettings = serviceProvider.GetService<IOptions<Models.Settings>>().Value.BotFramework;
                 var appSettings = System.Configuration.ConfigurationManager.AppSettings;
-                appSettings["BotId"] = Configuration["BotFramework:BotId"];
-                appSettings["MicrosoftAppId"] = Configuration["BotFramework:MicrosoftAppId"];
-                appSettings["MicrosoftAppPassword"] = Configuration["BotFramework:MicrosoftAppPassword"];
+                appSettings["BotId"] = botFrameworkSettings.BotId;
+                appSettings["MicrosoftAppId"] = botFrameworkSettings.MicrosoftAppId;
+                appSettings["MicrosoftAppPassword"] = botFrameworkSettings.MicrosoftAppPassword;
             }
 
             var dbConnectionString = Configuration.GetConnectionString("DefaultConnection");

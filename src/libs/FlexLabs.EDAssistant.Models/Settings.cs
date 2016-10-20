@@ -4,6 +4,8 @@ namespace FlexLabs.EDAssistant.Models
 {
     public class Settings
     {
+        public const string EnvironmentPrefix = "EDA:";
+
         public static Settings Instance { get; private set; }
         public Settings()
         {

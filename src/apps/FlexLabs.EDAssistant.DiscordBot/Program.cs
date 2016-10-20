@@ -33,7 +33,7 @@ namespace FlexLabs.EDAssistant.DiscordBot
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
             if (System.Diagnostics.Debugger.IsAttached)
                 configBuilder.AddUserSecrets("aspnet-FlexLabs.EDAssistant-20160929030746");
-            configBuilder.AddEnvironmentVariables();
+            configBuilder.AddEnvironmentVariables(Models.Settings.EnvironmentPrefix);
             var config = configBuilder.Build();
 
             var dbConnectionString = config.GetConnectionString("DefaultConnection");
