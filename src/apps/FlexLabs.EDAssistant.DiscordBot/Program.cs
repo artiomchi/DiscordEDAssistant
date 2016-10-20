@@ -36,7 +36,7 @@ namespace FlexLabs.EDAssistant.DiscordBot
             configBuilder.AddEnvironmentVariables();
             Config = configBuilder.Build();
 
-            var botToken = Config.GetConnectionString("Discord.Bot.Token");
+            var botToken = Config["Discord:Bot.Token"];
             if (botToken == null)
             {
                 Console.WriteLine("Bot auth token missing!");
@@ -64,7 +64,7 @@ namespace FlexLabs.EDAssistant.DiscordBot
                     break;
                 default:
                     var bot = new Bot(serviceProvider);
-                    bot.Start(botToken, Config["Discord.Bot.ClientID"]);
+                    bot.Start(botToken, Config["Discord:Bot.ClientID"]);
                     break;
             }
         }
