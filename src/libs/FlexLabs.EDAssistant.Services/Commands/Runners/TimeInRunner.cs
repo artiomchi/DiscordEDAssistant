@@ -9,7 +9,7 @@ namespace FlexLabs.EDAssistant.Services.Commands.Runners
         public string Template => "time in {timezone} {time}";
         public string Title => "Convert in-game time to local time";
 
-        public Task<CommandResponse> RunAsync(string[] arguments)
+        public Task<CommandResponse> RunAsync(string[] arguments, object channelData)
         {
             if (arguments.Length < 2)
                 return Task.FromResult(CommandResponse.Nop);

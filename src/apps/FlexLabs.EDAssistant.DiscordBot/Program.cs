@@ -43,6 +43,13 @@ namespace FlexLabs.EDAssistant.DiscordBot
             ServiceMappings.ConfigureDatabase(services, dbConnectionString);
             ServiceMappings.ConfigureServices(services);
             services.AddTransient<Bot>();
+            services.AddTransient<Runners.KosRunner>();
+            services.AddTransient<Runners.KosSetRunner>();
+            services.AddTransient<Runners.KosRemoveRunner>();
+            services.AddTransient<Runners.WelcomeRunner>();
+            services.AddTransient<Runners.WelcomeSetRunner>();
+            services.AddTransient<Runners.SetPrefixRunner>();
+            services.AddTransient<Runners.AboutRunner>();
             var serviceProvider = services.BuildServiceProvider();
             ServiceMappings.InitDatabase(dbConnectionString);
 

@@ -20,7 +20,7 @@ namespace FlexLabs.EDAssistant.Services.Commands.Runners
         public string Template => "modules near {system} {modules}";
         public string Title => "Find modules closest to the current system";
 
-        public Task<CommandResponse> RunAsync(string[] arguments)
+        public Task<CommandResponse> RunAsync(string[] arguments, object channelData)
         {
             if (arguments.Length < 0)
                 return Task.FromResult(CommandResponse.Nop);

@@ -30,7 +30,7 @@ namespace FlexLabs.EDAssistant.Web.Controllers
             {
                 if (activity.Type == ActivityTypes.Message && !string.IsNullOrWhiteSpace(activity.Text))
                 {
-                    var result = await _commandProcessorService.ProcessAsync(activity.ChannelId, activity.Text);
+                    var result = await _commandProcessorService.ProcessAsync(activity.ChannelId, activity.Text, null);
                     foreach (var content in result.Contents)
                         await connector.Conversations.ReplyToActivityAsync(activity.CreateReply(content.Format(activity.ChannelId)));
                 }

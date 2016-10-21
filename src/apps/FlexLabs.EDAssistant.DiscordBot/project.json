@@ -12,7 +12,6 @@
 
   "dependencies": {
     "Discord.Net": "0.9.5",
-    "Discord.Net.Commands": "0.9.5",
     "FlexLabs.EDAssistant.Base": "0.7.0-*",
     "FlexLabs.EDAssistant.Injection": "0.7.0-*",
     "FlexLabs.EDAssistant.Models": "0.7.0-*",

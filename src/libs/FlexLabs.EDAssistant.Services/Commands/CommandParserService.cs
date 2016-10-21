@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -12,7 +13,7 @@ namespace FlexLabs.EDAssistant.Services.Commands
             _serviceProvider = serviceProvider;
         }
 
-        private Type[] RunnerTypes = new[]
+        private List<Type> RunnerTypes = new List<Type>
         {
             typeof(Runners.TimeRunner),
             typeof(Runners.TimeInRunner),
@@ -21,15 +22,20 @@ namespace FlexLabs.EDAssistant.Services.Commands
             typeof(Runners.InaraWhoisRunner),
         };
 
-        public async Task<CommandResponse> ProcessAsync(string channelID, string message, string commandTrigger = "/")
+        public void RegisterRunner<TRunner>() where TRunner : IRunner
+        {
+            RunnerTypes.Add(typeof(TRunner));
+        }
+
+        public async Task<CommandResponse> ProcessAsync(string channelID, string message, object channelData, string commandTrigger = "/")
         {
             if (message.StartsWith(commandTrigger))
-                return await ProcessCommandAsync(channelID, message.Substring(commandTrigger.Length));
+                return await ProcessCommandAsync(channelID, message.Substring(commandTrigger.Length), channelData);
 
             return CommandResponse.Nop;
         }
 
-        public Task<CommandResponse> ProcessCommandAsync(string channelID, string message)
+        public Task<CommandResponse> ProcessCommandAsync(string channelID, string message, object channelData)
         {
             foreach (var runnerType in RunnerTypes)
                 using (var runner = (IRunner)_serviceProvider.GetService(runnerType))
@@ -40,7 +46,8 @@ namespace FlexLabs.EDAssistant.Services.Commands
                         continue;
                     if (message.Length > runner.Prefix.Length && message[runner.Prefix.Length] != ' ')
                         continue;
-                    return runner.RunAsync(message.Substring(runner.Prefix.Length).Trim().Split(',').Select(s => s.Trim()).ToArray());
+                    var arguments = message.Substring(runner.Prefix.Length).Trim().Split(',').Select(s => s.Trim()).ToArray();
+                    return runner.RunAsync(arguments, channelData);
                 }
 
             return Task.FromResult(CommandResponse.Nop);

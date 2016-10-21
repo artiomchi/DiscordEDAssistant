@@ -21,7 +21,7 @@ namespace FlexLabs.EDAssistant.Services.Commands.Runners
         public string Template => "whois {cmdr}";
         public string Title => "Does a lookup for the CMDR info on Inara.cz";
 
-        public async Task<CommandResponse> RunAsync(string[] arguments)
+        public async Task<CommandResponse> RunAsync(string[] arguments, object channelData)
         {
             var cmdrName = arguments[0];
 

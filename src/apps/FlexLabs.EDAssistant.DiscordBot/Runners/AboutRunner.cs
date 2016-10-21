@@ -1,22 +1,24 @@
-﻿using Discord.Commands;
+﻿using FlexLabs.EDAssistant.Services.Commands;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
-namespace FlexLabs.EDAssistant.DiscordBot.Commands
+namespace FlexLabs.EDAssistant.DiscordBot.Runners
 {
-    public static class AboutCommands
+    public class AboutRunner : IRunner
     {
-        public static void CreateCommands_About(this CommandService commandService)
+        public void Dispose() { }
+
+        public string Prefix => "about";
+        public string Template => "about";
+        public string Title => "Display bot information";
+
+        public Task<CommandResponse> RunAsync(string[] arguments, object channelData)
         {
-            commandService.CreateCommand("about")
-                .Alias("uptime", "status")
-                .Description("Display server information")
-                .Do(e =>
-                {
-                    var message =
+            var message =
         $@"```http
 Status           : OK
-Servers Joined   : {e.Channel.Client.Servers.Count()}
+Servers Joined   : {Bot.Client.Servers.Count()}
 Uptime           : {DateTime.UtcNow.Subtract(Bot.Started).ToString()}
 Build            : {Program.GetVersion()}
 Build Time       : {Program.GetBuildTime()}
@@ -26,8 +28,7 @@ Build Time       : {Program.GetBuildTime()}
 If you want to add this bot to your server, follow this link:
 https://discordapp.com/oauth2/authorize?client_id={Models.Settings.Instance.Discord.ClientID}&scope=bot&permissions=3072";
 
-                    return e.Channel.SendMessage(message);
-                });
+            return Task.FromResult(CommandResponse.Text(message));
         }
     }
 }

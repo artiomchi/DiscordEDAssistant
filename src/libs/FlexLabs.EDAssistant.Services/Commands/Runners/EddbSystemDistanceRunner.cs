@@ -17,7 +17,7 @@ namespace FlexLabs.EDAssistant.Services.Commands.Runners
         public string Template => "dist {system} {system}";
         public string Title => "Calculate distance between two systems";
 
-        public Task<CommandResponse> RunAsync(string[] arguments)
+        public Task<CommandResponse> RunAsync(string[] arguments, object channelData)
         {
             if (arguments.Length < 2)
                 return Task.FromResult(CommandResponse.Nop);
