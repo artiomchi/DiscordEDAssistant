@@ -17,8 +17,10 @@ namespace FlexLabs.EDAssistant.Services.Commands.Runners
         }
         public void Dispose() { }
 
-        public string Prefix => "whois";
-        public string Template => "whois {cmdr}";
+        public const string Prefix = "whois";
+        public const string Template = "whois {cmdr}";
+        string IRunner.Prefix => Prefix;
+        string IRunner.Template => Template;
         public string Title => "Does a lookup for the CMDR info on Inara.cz";
 
         public async Task<CommandResponse> RunAsync(string[] arguments, object channelData)

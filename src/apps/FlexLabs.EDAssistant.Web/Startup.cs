@@ -50,6 +50,9 @@ namespace FlexLabs.EDAssistant.Web
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IServiceProvider serviceProvider)
         {
+            // Initialising settings for static access
+            var settings = serviceProvider.GetService<IOptions<Models.Settings>>().Value;
+
             if (env.IsDevelopment())
             {
                 loggerFactory.AddConsole(Configuration.GetSection("Logging"));
@@ -60,7 +63,7 @@ namespace FlexLabs.EDAssistant.Web
             else
             {
                 // Setting the Microsoft Bot Framework credentials
-                var botFrameworkSettings = serviceProvider.GetService<IOptions<Models.Settings>>().Value.BotFramework;
+                var botFrameworkSettings = settings.BotFramework;
                 var appSettings = System.Configuration.ConfigurationManager.AppSettings;
                 appSettings["BotId"] = botFrameworkSettings.BotId;
                 appSettings["MicrosoftAppId"] = botFrameworkSettings.MicrosoftAppId;

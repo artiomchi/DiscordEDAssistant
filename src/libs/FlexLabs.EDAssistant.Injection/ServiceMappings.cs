@@ -25,12 +25,13 @@ namespace FlexLabs.EDAssistant.Injection
             services.AddTransient<IKosRulesRepository, EFCoreKosRulesRepository>();
             services.AddTransient<IServersRepository, EFCoreServersRepository>();
 
-            services.AddTransient<CommandParserService>();
             services.AddTransient<EddbDataService>();
             services.AddTransient<EddbSyncService>();
             services.AddTransient<KosRulesService>();
             services.AddTransient<ServersService>();
 
+            services.AddTransient<CommandParserService>();
+            services.AddTransient<LuisProcessor>();
             // Command Runners
             services.AddTransient<EddbModuleSearchRunner>();
             services.AddTransient<EddbSystemDistanceRunner>();

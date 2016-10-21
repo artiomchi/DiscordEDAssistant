@@ -16,8 +16,10 @@ namespace FlexLabs.EDAssistant.Services.Commands.Runners
         }
         public void Dispose() => _dataService.Dispose();
 
-        public string Prefix => "modules near";
-        public string Template => "modules near {system} {modules}";
+        public const string Prefix = "modules near";
+        public const string Template = "modules near {system} {modules}";
+        string IRunner.Prefix => Prefix;
+        string IRunner.Template => Template;
         public string Title => "Find modules closest to the current system";
 
         public Task<CommandResponse> RunAsync(string[] arguments, object channelData)

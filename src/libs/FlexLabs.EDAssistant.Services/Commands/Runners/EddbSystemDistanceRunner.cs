@@ -13,8 +13,10 @@ namespace FlexLabs.EDAssistant.Services.Commands.Runners
         }
         public void Dispose() => _dataService.Dispose();
 
-        public string Prefix => "dist";
-        public string Template => "dist {system} {system}";
+        public const string Prefix = "dist";
+        public const string Template = "dist {system} {system}";
+        string IRunner.Prefix => Prefix;
+        string IRunner.Template => Template;
         public string Title => "Calculate distance between two systems";
 
         public Task<CommandResponse> RunAsync(string[] arguments, object channelData)

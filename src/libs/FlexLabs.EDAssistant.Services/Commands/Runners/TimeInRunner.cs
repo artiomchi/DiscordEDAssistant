@@ -5,8 +5,10 @@ namespace FlexLabs.EDAssistant.Services.Commands.Runners
 {
     public class TimeInRunner : TimeRunnerBase, IRunner
     {
-        public string Prefix => "time in";
-        public string Template => "time in {timezone} {time}";
+        public const string Prefix = "time in";
+        public const string Template = "time in {timezone} {time}";
+        string IRunner.Prefix => Prefix;
+        string IRunner.Template => Template;
         public string Title => "Convert in-game time to local time";
 
         public Task<CommandResponse> RunAsync(string[] arguments, object channelData)
