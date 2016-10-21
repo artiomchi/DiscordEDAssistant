@@ -42,6 +42,7 @@ namespace FlexLabs.EDAssistant.DiscordBot
             services.Configure<Models.Settings>(config);
             ServiceMappings.ConfigureDatabase(services, dbConnectionString);
             ServiceMappings.ConfigureServices(services);
+            services.AddTransient<Bot>();
             var serviceProvider = services.BuildServiceProvider();
             ServiceMappings.InitDatabase(dbConnectionString);
 
@@ -62,7 +63,8 @@ namespace FlexLabs.EDAssistant.DiscordBot
                     }
                     break;
                 default:
-                    var bot = new Bot(serviceProvider);
+
+                    var bot = serviceProvider.GetService<Bot>();
                     bot.Start();
                     break;
             }

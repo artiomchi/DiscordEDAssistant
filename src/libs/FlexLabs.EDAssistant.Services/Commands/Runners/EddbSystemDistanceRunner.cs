@@ -1,9 +1,10 @@
 ﻿using FlexLabs.EDAssistant.Services.Integrations.Eddb;
 using System;
+using System.Threading.Tasks;
 
 namespace FlexLabs.EDAssistant.Services.Commands.Runners
 {
-    public class EddbSystemDistanceRunner : IDisposable
+    public class EddbSystemDistanceRunner : IRunner
     {
         private readonly EddbDataService _dataService;
         public EddbSystemDistanceRunner(EddbDataService dataService)
@@ -12,7 +13,19 @@ namespace FlexLabs.EDAssistant.Services.Commands.Runners
         }
         public void Dispose() => _dataService.Dispose();
 
-        public CommandResponse Run(string system1, string system2)
+        public string Prefix => "dist";
+        public string Template => "dist {system} {system}";
+        public string Title => "Calculate distance between two systems";
+
+        public Task<CommandResponse> RunAsync(string[] arguments)
+        {
+            if (arguments.Length < 2)
+                return Task.FromResult(CommandResponse.Nop);
+
+            return Task.FromResult(Run(arguments[0], arguments[1]));
+        }
+
+        private CommandResponse Run(string system1, string system2)
         {
             var sys1 = _dataService.GetSystem(system1);
             if (sys1 == null)

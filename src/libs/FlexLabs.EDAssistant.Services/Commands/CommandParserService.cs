@@ -1,7 +1,6 @@
 ﻿using System;
-using Microsoft.Extensions.DependencyInjection;
-using System.Threading.Tasks;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace FlexLabs.EDAssistant.Services.Commands
 {
@@ -13,51 +12,38 @@ namespace FlexLabs.EDAssistant.Services.Commands
             _serviceProvider = serviceProvider;
         }
 
+        private Type[] RunnerTypes = new[]
+        {
+            typeof(Runners.TimeRunner),
+            typeof(Runners.TimeInRunner),
+            typeof(Runners.EddbSystemDistanceRunner),
+            typeof(Runners.EddbModuleSearchRunner),
+            typeof(Runners.InaraWhoisRunner),
+        };
+
         public async Task<CommandResponse> ProcessAsync(string channelID, string message, string commandTrigger = "/")
         {
             if (message.StartsWith(commandTrigger))
-            {
-                message = message.Substring(commandTrigger.Length);
-                var cut = message.IndexOf(' ');
-                var command = cut > 0 ? message.Substring(0, cut) : message;
-                var arguments = cut > 0 ? message.Substring(cut + 1) : string.Empty;
-                return await ProcessCommandAsync(channelID, command, new[] { arguments });
-            }
+                return await ProcessCommandAsync(channelID, message.Substring(commandTrigger.Length));
 
             return CommandResponse.Nop;
         }
 
-        private async Task<CommandResponse> ProcessCommandAsync(string channelID, string command, string[] arguments)
+        public Task<CommandResponse> ProcessCommandAsync(string channelID, string message)
         {
-            switch (command.ToLowerInvariant())
-            {
-                case "whois":
-                    var inaraRunner = _serviceProvider.GetService<Runners.InaraWhoisRunner>();
-                    return await inaraRunner.RunAsync(arguments);
+            foreach (var runnerType in RunnerTypes)
+                using (var runner = (IRunner)_serviceProvider.GetService(runnerType))
+                {
+                    if (runner == null)
+                        continue;
+                    if (!message.StartsWith(runner.Prefix, StringComparison.OrdinalIgnoreCase))
+                        continue;
+                    if (message.Length > runner.Prefix.Length && message[runner.Prefix.Length] != ' ')
+                        continue;
+                    return runner.RunAsync(message.Substring(runner.Prefix.Length).Trim().Split(',').Select(s => s.Trim()).ToArray());
+                }
 
-                case "time":
-                    return Runners.TimeRunner.CurrentTime();
-
-                case "timein":
-                    return Runners.TimeRunner.Command_TimeIn(arguments[0], arguments[1]);
-
-                case "dist":
-                    using (var eddbDistRunner = _serviceProvider.GetService<Runners.EddbSystemDistanceRunner>())
-                    {
-                        return eddbDistRunner.Run(arguments[0], arguments[1]);
-                    }
-
-                case "modulesnear":
-                    using (var eddbDistRunner = _serviceProvider.GetService<Runners.EddbModuleSearchRunner>())
-                    {
-                        return await eddbDistRunner.RunAsync(arguments[0], arguments.Skip(1).ToArray());
-                    }
-
-                case "help":
-                    return CommandResponse.Text("{help message}");
-            }
-
-            return CommandResponse.Nop;
+            return Task.FromResult(CommandResponse.Nop);
         }
     }
 }

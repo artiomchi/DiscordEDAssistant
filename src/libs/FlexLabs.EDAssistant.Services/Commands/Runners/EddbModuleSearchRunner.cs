@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FlexLabs.EDAssistant.Services.Commands.Runners
 {
-    public class EddbModuleSearchRunner : IDisposable
+    public class EddbModuleSearchRunner : IRunner
     {
         private readonly EddbDataService _dataService;
         public EddbModuleSearchRunner(EddbDataService dataService)
@@ -16,7 +16,19 @@ namespace FlexLabs.EDAssistant.Services.Commands.Runners
         }
         public void Dispose() => _dataService.Dispose();
 
-        public async Task<CommandResponse> RunAsync(string systemName, string[] modules)
+        public string Prefix => "modules near";
+        public string Template => "modules near {system} {modules}";
+        public string Title => "Find modules closest to the current system";
+
+        public Task<CommandResponse> RunAsync(string[] arguments)
+        {
+            if (arguments.Length < 0)
+                return Task.FromResult(CommandResponse.Nop);
+
+            return RunAsync(arguments[0], arguments.Skip(1).ToArray());
+        }
+
+        private async Task<CommandResponse> RunAsync(string systemName, string[] modules)
         {
             var starSystem = _dataService.GetSystem(systemName);
             if (starSystem == null)

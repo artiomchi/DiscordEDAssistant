@@ -8,13 +8,18 @@ using System.Threading.Tasks;
 
 namespace FlexLabs.EDAssistant.Services.Commands.Runners
 {
-    public class InaraWhoisRunner
+    public class InaraWhoisRunner : IRunner
     {
         private readonly Models.Settings.InaraSettings _settings;
         public InaraWhoisRunner(IOptions<Models.Settings> settings)
         {
             _settings = settings.Value.Inara;
         }
+        public void Dispose() { }
+
+        public string Prefix => "whois";
+        public string Template => "whois {cmdr}";
+        public string Title => "Does a lookup for the CMDR info on Inara.cz";
 
         public async Task<CommandResponse> RunAsync(string[] arguments)
         {

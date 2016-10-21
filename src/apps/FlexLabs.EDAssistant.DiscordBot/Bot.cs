@@ -2,6 +2,7 @@
 using Discord.Commands;
 using FlexLabs.EDAssistant.DiscordBot.Commands;
 using FlexLabs.EDAssistant.DiscordBot.Extensions;
+using FlexLabs.EDAssistant.Services.Commands;
 using FlexLabs.EDAssistant.Services.Data;
 using System;
 using System.Collections.Generic;
@@ -13,13 +14,14 @@ namespace FlexLabs.EDAssistant.DiscordBot
 {
     public class Bot
     {
-        private DiscordClient _client;
+        private readonly DiscordClient _client;
+        private readonly CommandParserService commandParserService;
 
         public static IServiceProvider ServiceProvider { get; private set; }
         public static DateTime Started { get; private set; }
         public static Dictionary<ulong, string> ServerPrefixes { get; } = new Dictionary<ulong, string>();
 
-        public Bot(IServiceProvider serviceProvider)
+        public Bot(IServiceProvider serviceProvider, CommandParserService commandParserService)
         {
             ServiceProvider = serviceProvider;
             _client = new DiscordClient(x =>
@@ -28,47 +30,69 @@ namespace FlexLabs.EDAssistant.DiscordBot
                 x.AppVersion = Program.GetVersion();
             });
 
-            _client.UsingCommands(x =>
+            _client.MessageReceived += async (s, e) =>
             {
-                x.HelpMode = HelpMode.Disabled;
-                x.CustomPrefixHandler = m =>
-                {
-                    if (m.Channel.IsPrivate || m.Server == null) return 0;
+                var message = e.Message.Text;
+                var prefix = e.Server != null
+                    ? GetServerPrefix(e.Server.Id)
+                    : "/";
 
-                    var prefix = GetServerPrefix(m.Server.Id);
-                    if (prefix == null || !m.Text.StartsWith(prefix))
-                        return -1;
+                if (prefix != null && message.StartsWith(prefix))
+                    message = message.Substring(prefix.Length);
+                else if (message.StartsWith(_client.CurrentUser.Mention))
+                    message = message.Substring(_client.CurrentUser.Mention.Length).Trim();
+                else if (message.StartsWith(_client.CurrentUser.NicknameMention))
+                    message = message.Substring(_client.CurrentUser.NicknameMention.Length).Trim();
+                else
+                    return;
 
-                    return prefix.Length;
-                };
-                x.ErrorHandler = async (s, e) =>
-                {
-                    var message = e.Message.RawText
-                        .Replace(_client.CurrentUser.Mention, "")
-                        .Replace(_client.CurrentUser.NicknameMention, "");
-                    await Luis.LuisProcessor.Process(e.Channel, message);
-                };
-            });
+                var result = await commandParserService.ProcessCommandAsync("discord", message);
+                if (result.Contents?.Count > 0)
+                    foreach (var content in result.Contents)
+                        await e.Channel.SendMessage(content.Format("discord"));
+            };
 
-            var commandService = _client.GetService<CommandService>();
-            commandService.CreateCommand("help")
-                .Hide()
-                .Parameter("public", ParameterType.Multiple)
-                .Do(Command_Help);
+            //_client.UsingCommands(x =>
+            //{
+            //    x.HelpMode = HelpMode.Disabled;
+            //    x.CustomPrefixHandler = m =>
+            //    {
+            //        if (m.Channel.IsPrivate || m.Server == null) return 0;
 
-            commandService.CreateCommands_SetPrefix();
+            //        var prefix = GetServerPrefix(m.Server.Id);
+            //        if (prefix == null || !m.Text.StartsWith(prefix))
+            //            return -1;
 
-            commandService.CreateCommands_Welcome(_client);
+            //        return prefix.Length;
+            //    };
+            //    x.ErrorHandler = async (s, e) =>
+            //    {
+            //        var message = e.Message.RawText
+            //            .Replace(_client.CurrentUser.Mention, "")
+            //            .Replace(_client.CurrentUser.NicknameMention, "");
+            //        await Luis.LuisProcessor.Process(e.Channel, message);
+            //    };
+            //});
 
-            commandService.CreateCommands_Time();
+            //var commandService = _client.GetService<CommandService>();
+            //commandService.CreateCommand("help")
+            //    .Hide()
+            //    .Parameter("public", ParameterType.Multiple)
+            //    .Do(Command_Help);
 
-            commandService.CreateCommands_KosRules();
+            //commandService.CreateCommands_SetPrefix();
 
-            commandService.CreateCommands_Eddb();
+            //commandService.CreateCommands_Welcome(_client);
 
-            commandService.CreateCommands_Inara();
+            //commandService.CreateCommands_Time();
 
-            commandService.CreateCommands_About();
+            //commandService.CreateCommands_KosRules();
+
+            //commandService.CreateCommands_Eddb();
+
+            //commandService.CreateCommands_Inara();
+
+            //commandService.CreateCommands_About();
         }
 
         public void Start()

@@ -32,7 +32,11 @@ namespace FlexLabs.EDAssistant.Injection
             services.AddTransient<ServersService>();
 
             // Command Runners
+            services.AddTransient<EddbModuleSearchRunner>();
+            services.AddTransient<EddbSystemDistanceRunner>();
             services.AddTransient<InaraWhoisRunner>();
+            services.AddTransient<TimeInRunner>();
+            services.AddTransient<TimeRunner>();
         }
     }
 }
