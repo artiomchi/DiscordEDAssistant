@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net46</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="HtmlAgilityPack" Version="1.4.9.5" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FlexLabs.EDAssistant.Base\FlexLabs.EDAssistant.Base.csproj" />
+    <ProjectReference Include="..\FlexLabs.EDAssistant.Models\FlexLabs.EDAssistant.Models.csproj" />
+    <ProjectReference Include="..\FlexLabs.EDAssistant.Repositories\FlexLabs.EDAssistant.Repositories.csproj" />
+  </ItemGroup>
+
+</Project>

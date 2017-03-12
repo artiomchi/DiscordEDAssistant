@@ -1,0 +1,11 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net46</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FlexLabs.EDAssistant.Models\FlexLabs.EDAssistant.Models.csproj" />
+  </ItemGroup>
+
+</Project>

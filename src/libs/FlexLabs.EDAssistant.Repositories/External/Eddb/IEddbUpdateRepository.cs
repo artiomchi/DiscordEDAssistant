@@ -1,6 +1,6 @@
-﻿using System;
+﻿using FlexLabs.EDAssistant.Models.External.Eddb;
+using System;
 using System.Collections.Generic;
-using FlexLabs.EDAssistant.Models.External.Eddb;
 using System.Threading.Tasks;
 
 namespace FlexLabs.EDAssistant.Repositories.External.Eddb

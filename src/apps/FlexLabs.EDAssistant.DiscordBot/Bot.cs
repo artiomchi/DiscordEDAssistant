@@ -102,8 +102,8 @@ namespace FlexLabs.EDAssistant.DiscordBot
 
         private async Task Command_Help(CommandEventArgs e)
         {
-            var all = (e.Channel.IsPrivate || e.User.ServerPermissions.Administrator) && e.Args?.Length > 0 && e.Args.Any(a => String.Equals("all", a, StringComparison.OrdinalIgnoreCase));
-            var reveal = e.Channel.IsPrivate && e.Args?.Length > 0 && e.Args.Any(a => String.Equals("reveal", a, StringComparison.OrdinalIgnoreCase));
+            var all = (e.Channel.IsPrivate || e.User.ServerPermissions.Administrator) && e.Args?.Length > 0 && e.Args.Any(a => string.Equals("all", a, StringComparison.OrdinalIgnoreCase));
+            var reveal = e.Channel.IsPrivate && e.Args?.Length > 0 && e.Args.Any(a => string.Equals("reveal", a, StringComparison.OrdinalIgnoreCase));
 
             var commandService = _client.GetService<CommandService>();
             var commands = commandService.AllCommands.OfType<Command>()

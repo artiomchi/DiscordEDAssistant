@@ -1,7 +1,6 @@
 ﻿using FlexLabs.EDAssistant.Services.Commands;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Connector;
-using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
 

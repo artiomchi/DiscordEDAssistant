@@ -49,7 +49,7 @@ namespace FlexLabs.EDAssistant.Services.Commands.Runners
             var rightAligned = new[] { 1, 5, 6 };
 
             var result = new CommandResponse();
-            result.Add($@"Closest stations to `{starSystem.Name}` with that sell `{String.Join("`, `", modules)}`:");
+            result.Add($@"Closest stations to `{starSystem.Name}` with that sell `{string.Join("`, `", modules)}`:");
             result.AddTable(headings.Concat(data).ToArray(), rightAligned);
             return result;
         }
